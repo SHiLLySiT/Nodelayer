@@ -153,6 +153,7 @@ package controllers
 		
 		private function onNew(e:Event):void
 		{
+			_projectModel.backgroundImagePath = "";
 			_projectModel.removeAllNodes();
 		}
 		

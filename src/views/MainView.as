@@ -72,7 +72,14 @@ package views
 		
 		public function setBackgroundImage(path:String):void
 		{
-			_backgroundImageLoader.load(new URLRequest(path));
+			if (path == "")
+			{
+				_backgroundImageLoader.unload();
+			}
+			else
+			{
+				_backgroundImageLoader.load(new URLRequest(path));
+			}
 		}
 		
 		public function removeNode(id:int):void
@@ -114,7 +121,7 @@ package views
 		
 		private function onErrorLoadingBackgroundImage(e:IOErrorEvent):void
 		{
-			LogManager.logError(this, "Error loading background image!");
+			LogManager.logError(this, "Error loading background image! " + e.errorID);
 		}
 		
 		private function onDrawConnectToolLine(e:Event):void
