@@ -313,8 +313,11 @@ package controllers
 		
 		private function onNodeDoubleClick(e:MouseEvent):void
 		{
-			deselectAllNodes()
-			selectAllNodesOnPath(e.currentTarget as Node);
+			if (_projectModel.currentTool == ToolType.MODIFY)
+			{
+				deselectAllNodes();
+				selectAllNodesOnPath(e.currentTarget as Node);
+			}
 		}
 		
 		private function onNodeRightMouseDown(e:MouseEvent):void
