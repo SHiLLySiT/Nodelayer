@@ -23,6 +23,7 @@ package controllers
 	import views.MainView;
 	import views.ui.Node;
 	import views.View;
+	import flash.net.navigateToURL;
 	
 	public class MainController implements IController
 	{
@@ -97,6 +98,9 @@ package controllers
 			var helpMenu:NativeMenuItem = _view.stage.nativeWindow.menu.addItem(new NativeMenuItem("Help")); 
 			helpMenu.submenu = new NativeMenu(); 
 			
+			var onlineDocumentationCommand:NativeMenuItem = helpMenu.submenu.addItem(new NativeMenuItem("Online Documentation")); 
+			onlineDocumentationCommand.addEventListener(Event.SELECT, this.onOnlineDocumentation);
+			
 			var aboutCommand:NativeMenuItem = helpMenu.submenu.addItem(new NativeMenuItem("About")); 
 			aboutCommand.addEventListener(Event.SELECT, this.onAbout);
 		}
@@ -131,9 +135,20 @@ package controllers
 			_projectModel.backgroundImagePath = file.nativePath;
 		}
 		
+		private function onOnlineDocumentation(e:Event):void
+		{
+			navigateToURL(new URLRequest("https://github.com/SHiLLySiT/Nodelayer/wiki"));
+		}
+		
 		private function onAbout(e:Event):void
 		{
-			
+			if (ViewManager.getViewById("About") == null)
+			{
+				// TODO: width/height of _view isn't correct?
+				var posX:Number = NativeApplication.nativeApplication.activeWindow.width * 0.5 - 100;
+				var posY:Number = NativeApplication.nativeApplication.activeWindow.height * 0.5 - 100;
+				ViewManager.addView("About", { x:posX, y:posY } );
+			}
 		}
 		
 		private function onNew(e:Event):void
@@ -163,6 +178,8 @@ package controllers
 			_projectModel.loadProject(data);
 			
 			stream.close();	
+			
+			LogManager.logInfo(this, "Successfully loaded " + file.name);
 		}
 		
 		private function onSave(e:Event):void
@@ -187,6 +204,8 @@ package controllers
 			stream.open(file, FileMode.WRITE);
 			stream.writeUTFBytes(data);
 			stream.close();	
+			
+			LogManager.logInfo(this, "Successfully saved " + file.name);
 		}
 		
 		private function onQuit(e:Event):void
