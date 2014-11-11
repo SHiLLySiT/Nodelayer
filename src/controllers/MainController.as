@@ -35,6 +35,7 @@ package controllers
 		private var _projectModel:ProjectModel;
 		private var _overNode:Node;
 		private var _selectedNodes:Vector.<Node>;
+		private var _selectedNodeOffsets:Vector.<Point>;
 		private var _currentConnectToolNode:Node;
 		private var _dragOffset:Point;
 		
@@ -224,10 +225,11 @@ package controllers
 		
 		private function onDragNodeUpdate(e:Event):void
 		{
-			for each(var node:Node in _selectedNodes)
+			for (var i:int = 0; i < _selectedNodes.length; i++)
 			{
-				node.x = _view.mouseX;
-				node.y = _view.mouseY;
+				var node:Node = _selectedNodes[i];
+				node.x = _view.mouseX + _selectedNodeOffsets[i].x;
+				node.y = _view.mouseY + _selectedNodeOffsets[i].y;
 				
 				var nodeState:NodeState = _projectModel.getNode(node.id);
 				nodeState.x = node.x;
@@ -275,7 +277,10 @@ package controllers
 					break;
 					
 				case ToolType.MODIFY:
-					
+					if (_overNode == null)
+					{
+						deselectAllNodes();
+					}
 					break;
 			}
 		}
@@ -293,10 +298,7 @@ package controllers
 					break;
 					
 				case ToolType.MODIFY:
-					if (_overNode == null)
-					{
-						deselectAllNodes();
-					}
+					
 					break;
 					
 				case ToolType.CONNECT:
@@ -309,11 +311,11 @@ package controllers
 			}
 		}
 		
-		/*private function onNodeDoubleClick(e:MouseEvent):void
+		private function onNodeDoubleClick(e:MouseEvent):void
 		{
-			_selectedNodes.length = 0;
+			deselectAllNodes()
 			selectAllNodesOnPath(e.currentTarget as Node);
-		}*/
+		}
 		
 		private function onNodeRightMouseDown(e:MouseEvent):void
 		{
@@ -360,8 +362,10 @@ package controllers
 			var node:Node = e.currentTarget as Node;
 			switch (_projectModel.currentTool)
 			{
+				case ToolType.ADD:
+					break;
+					
 				case ToolType.MODIFY:
-					deselectAllNodes();
 					selectNode(node);
 					dragSelectedNodes();
 					break;
@@ -413,7 +417,7 @@ package controllers
 			node.addEventListener(MouseEvent.MOUSE_DOWN, this.onNodeMouseDown);
 			node.addEventListener(MouseEvent.MOUSE_UP, this.onNodeMouseUp);
 			node.addEventListener(MouseEvent.RIGHT_MOUSE_DOWN, this.onNodeRightMouseDown);
-			//node.addEventListener(MouseEvent.DOUBLE_CLICK, this.onNodeDoubleClick);
+			node.addEventListener(MouseEvent.DOUBLE_CLICK, this.onNodeDoubleClick);
 		}
 		
 		private function connectNodes(node1:int, node2:int):void
@@ -450,6 +454,12 @@ package controllers
 		
 		private function dragSelectedNodes():void
 		{
+			_selectedNodeOffsets = new Vector.<Point>();
+			for each (var n:Node in _selectedNodes)
+			{
+				_selectedNodeOffsets.push(new Point(n.x - _view.mouseX, n.y - _view.mouseY));
+			}
+			
 			_view.stage.addEventListener(MouseEvent.MOUSE_UP, this.onDragNodeEnd);
 			_view.stage.addEventListener(Event.ENTER_FRAME, this.onDragNodeUpdate);
 		}
@@ -480,23 +490,22 @@ package controllers
 			nodeState.isSelected = false;
 		}
 		
-		/*
 		private function selectAllNodesOnPath(node:Node):void
 		{
-			if (node.isSelected) return;
+			var nodeState:NodeState = _projectModel.getNode(node.id);
+			if (nodeState.isSelected) return;
 			
 			_selectedNodes.push(node);
 			selectNode(node);
 			
-			var nodeState:NodeState = _projectModel.getNode(node.id);
-			for each (var n:NodeState in nodeState.connectedNodes)
+			for each (var id:int in nodeState.connectedNodes)
 			{
-				var c:Node = _view.getNode(n.id);
+				var c:Node = _view.getNode(id);
 				if (c != null) selectAllNodesOnPath(c);
 			}
 		}
 		
-		
+		/*
 		private function selectConnectedNodes(node:Node):void
 		{
 			var nodeState:NodeState = _projectModel.getNode(node.id);

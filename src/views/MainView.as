@@ -46,12 +46,14 @@ package views
 			_connectionLayer = new Sprite();
 			this.addChild(_connectionLayer);
 			
-			this.addEventListener(Event.ENTER_FRAME, onUpdateNodeConnections);
+			this.addEventListener(Event.ENTER_FRAME, onUpdateNodeConnectionsEnter);
+			this.addEventListener(Event.EXIT_FRAME, onUpdateNodeConnectionsExit);
 		}
 		
 		override public function deinitialize():void 
 		{
-			this.removeEventListener(Event.ENTER_FRAME, onUpdateNodeConnections);
+			this.removeEventListener(Event.ENTER_FRAME, onUpdateNodeConnectionsEnter);
+			this.removeEventListener(Event.EXIT_FRAME, onUpdateNodeConnectionsExit);
 			this.removeChild(_connectionLayer);
 			this.removeChild(_backgroundImageLoader);
 			
@@ -152,9 +154,13 @@ package views
 			}
 		}
 		
-		private function onUpdateNodeConnections(e:Event):void
+		private function onUpdateNodeConnectionsEnter(e:Event):void
 		{
 			_connectionLayer.graphics.clear();
+		}
+		
+		private function onUpdateNodeConnectionsExit(e:Event):void
+		{
 			_connectionLayer.graphics.lineStyle(3, 0x2E3436);
 			
 			for each(var node:Node in _nodes)
