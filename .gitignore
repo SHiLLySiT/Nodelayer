@@ -1,5 +1,6 @@
 # Build and Release Folders
 bin/
+obj/
 bin-debug/
 bin-release/
 
@@ -56,3 +57,4 @@ $RECYCLE.BIN/
 *.msi
 *.msm
 *.msp
+obj/NodelayerConfig.xml
