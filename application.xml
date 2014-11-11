@@ -6,8 +6,8 @@
 	<filename>Nodelayer</filename> 
 	
 	<name>Nodelayer</name> 
-	<description></description> 
-	<copyright></copyright> 
+	<description>Nodelayer is a free and open source path editing tool.</description> 
+	<copyright>Alex Larioza</copyright> 
 	
 	<initialWindow> 
 		<title>Nodelayer</title> 

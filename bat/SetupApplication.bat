@@ -8,7 +8,7 @@
 
 :: Your certificate information
 set CERT_NAME="Nodelayer"
-set CERT_PASS=fd
+set CERT_PASS=pixelsquidgames
 set CERT_FILE="bat\Nodelayer.p12"
 set SIGNING_OPTIONS=-storetype pkcs12 -keystore %CERT_FILE% -storepass %CERT_PASS%
 
