@@ -433,8 +433,8 @@ package controllers
 			
 			var nodeState:NodeState = new NodeState();
 			nodeState.id = id;
-			nodeState.x = _view.stage.mouseX;
-			nodeState.y = _view.stage.mouseY;
+			nodeState.x = _view.mouseX;
+			nodeState.y = _view.mouseY;
 			_projectModel.addNode(nodeState);
 			
 			if (connection != -1) 
