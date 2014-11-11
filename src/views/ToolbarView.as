@@ -33,6 +33,10 @@ package views
 			setupToolButton(modifyToolButton);
 			setupToolButton(connectToolButton);
 			
+			addTooltip(addToolButton, "Add Tool (1)");
+			addTooltip(modifyToolButton, "Modify Tool (2)");
+			addTooltip(connectToolButton, "Connect Tool (3)");
+			
 			// add tool is default
 			addToolButton.gotoAndStop(3);
 			
