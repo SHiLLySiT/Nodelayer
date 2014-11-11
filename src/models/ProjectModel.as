@@ -10,6 +10,7 @@ package models
 	import models.EditorModel;
 	import models.state.NodeState;
 	import types.ToolType;
+	import util.ApplicationUtility;
 	
 	public class ProjectModel extends EventDispatcher implements IModel
 	{
@@ -110,7 +111,7 @@ package models
 		
 		public function saveProject():String
 		{
-			var data:String = '<project version="' + EditorModel.APPLICATION_VERSION + '" bgImagePath="' + _backgroundImagePath + '">';
+			var data:String = '<project version="' + ApplicationUtility.getVersion() + '" bgImagePath="' + _backgroundImagePath + '">';
 			for each(var nodeState:NodeState in _nodeStates)
 			{
 				var attributes:Object = new Object();
@@ -136,7 +137,8 @@ package models
 			var xml:XML = new XML(data);
 			
 			// different version warning
-			if (xml.@version != EditorModel.APPLICATION_VERSION)
+			
+			if (xml.@version != ApplicationUtility.getVersion())
 			{
 				LogManager.logWarning(this, "Project was saved with a different version of Nodelayer!");
 			}

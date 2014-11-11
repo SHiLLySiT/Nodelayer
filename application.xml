@@ -2,12 +2,12 @@
 <application xmlns="http://ns.adobe.com/air/application/3.9">
 	
 	<id>Nodelayer</id> 
-	<versionNumber>1.0</versionNumber> 
+	<versionNumber>0.1.1</versionNumber> 
 	<filename>Nodelayer</filename> 
 	
 	<name>Nodelayer</name> 
-	<description></description> 
-	<copyright></copyright> 
+	<description>Nodelayer is a free and open source path editing tool.</description> 
+	<copyright>Alex Larioza</copyright> 
 	
 	<initialWindow> 
 		<title>Nodelayer</title> 
