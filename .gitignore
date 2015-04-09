@@ -58,3 +58,9 @@ $RECYCLE.BIN/
 *.msm
 *.msp
 obj/NodelayerConfig.xml
+.idea/workspace.xml
+.idea/Nodelayer.iml
+.idea/misc.xml
+.idea/modules.xml
+.idea/.name
+.idea/vcs.xml

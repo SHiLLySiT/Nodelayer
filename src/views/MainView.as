@@ -1,5 +1,6 @@
 package views 
 {
+	import events.NodeScaleEvent;
 	import flash.display.BitmapData;
 	import flash.display.DisplayObject;
 	import flash.display.Loader;
@@ -48,12 +49,17 @@ package views
 			
 			this.addEventListener(Event.ENTER_FRAME, onUpdateNodeConnectionsEnter);
 			this.addEventListener(Event.EXIT_FRAME, onUpdateNodeConnectionsExit);
+			
+			_projectModel.addEventListener(NodeScaleEvent.CHANGED, onNodeScaleChanged);
 		}
 		
 		override public function deinitialize():void 
 		{
 			this.removeEventListener(Event.ENTER_FRAME, onUpdateNodeConnectionsEnter);
 			this.removeEventListener(Event.EXIT_FRAME, onUpdateNodeConnectionsExit);
+			
+			_projectModel.removeEventListener(NodeScaleEvent.CHANGED, onNodeScaleChanged);
+			
 			this.removeChild(_connectionLayer);
 			this.removeChild(_backgroundImageLoader);
 			
@@ -72,7 +78,7 @@ package views
 		
 		public function setBackgroundImage(path:String):void
 		{
-			if (path == "")
+			if (path == "" || path == null)
 			{
 				_backgroundImageLoader.unload();
 			}
@@ -96,6 +102,8 @@ package views
 		{
 			var node:Node = new Node();
 			node.id = id;
+			node.scaleX = _projectModel.nodeScale;
+			node.scaleY = _projectModel.nodeScale;
 			node.x = x;
 			node.y = y;
 			node.mouseChildren = false;
@@ -117,6 +125,15 @@ package views
 		{
 			_connectToolLineNode = startNode;
 			_connectToolLineNode.addEventListener(Event.ENTER_FRAME, onDrawConnectToolLine);
+		}
+		
+		private function onNodeScaleChanged(e:NodeScaleEvent):void
+		{
+			for each(var node:Node in _nodes)
+			{
+				node.scaleX = e.newScale;
+				node.scaleY = e.newScale;
+			}
 		}
 		
 		private function onErrorLoadingBackgroundImage(e:IOErrorEvent):void

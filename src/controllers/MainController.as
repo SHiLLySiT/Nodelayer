@@ -39,6 +39,7 @@ package controllers
 		private var _selectedNodeOffsets:Vector.<Point>;
 		private var _currentConnectToolNode:Node;
 		private var _dragOffset:Point;
+		private var _isShiftPressed:Boolean;
 		
 		public function MainController() 
 		{
@@ -52,6 +53,7 @@ package controllers
 			_overNode = null;
 			_selectedNodes = new Vector.<Node>();
 			_dragOffset = new Point();
+			_isShiftPressed = false;
 			
 			_view = view as MainView;
 			_view.addEventListener(MouseEvent.MOUSE_DOWN, this.onMouseDown);
@@ -61,6 +63,7 @@ package controllers
 			_view.addEventListener(MouseEvent.MIDDLE_MOUSE_UP, this.onMiddleMouseUp);
 			
 			_view.stage.addEventListener(KeyboardEvent.KEY_DOWN, this.onKeyDown);
+			_view.stage.addEventListener(KeyboardEvent.KEY_UP, this.onKeyUp);
 			
 			_projectModel = ModelManager.getModel(ProjectModel) as ProjectModel;
 			_projectModel.addEventListener(ToolEvent.TOOL_CHANGED, this.onToolChanged);
@@ -71,30 +74,58 @@ package controllers
 			// --------------------------- MENUS
 			_view.stage.nativeWindow.menu = new NativeMenu(); 
 			
-			// ---- FILE
+			// --------- FILE
 			var fileMenu:NativeMenuItem = _view.stage.nativeWindow.menu.addItem(new NativeMenuItem("File")); 
 			fileMenu.submenu = new NativeMenu(); 
 			
 			var newCommand:NativeMenuItem = fileMenu.submenu.addItem(new NativeMenuItem("New")); 
 			newCommand.addEventListener(Event.SELECT, this.onNew); 
 			
-			var openCommand:NativeMenuItem = fileMenu.submenu.addItem(new NativeMenuItem("Open")); 
-			openCommand.addEventListener(Event.SELECT, this.onOpen);  
+			var openCommand:NativeMenuItem = fileMenu.submenu.addItem(new NativeMenuItem("Open Project")); 
+			openCommand.addEventListener(Event.SELECT, this.onOpenProject);  
 			
-			var saveCommand:NativeMenuItem = fileMenu.submenu.addItem(new NativeMenuItem("Save")); 
-			saveCommand.addEventListener(Event.SELECT, this.onSave);  
+			var saveCommand:NativeMenuItem = fileMenu.submenu.addItem(new NativeMenuItem("Save Project")); 
+			saveCommand.addEventListener(Event.SELECT, this.onSaveProject);
+			
+			// ---- EXPORT
+			var exportAsMenu:NativeMenuItem = fileMenu.submenu.addItem(new NativeMenuItem("Export as ...")); 
+			exportAsMenu.submenu = new NativeMenu();
+			
+			var exportXMLCommand:NativeMenuItem = exportAsMenu.submenu.addItem(new NativeMenuItem("XML")); 
+			exportXMLCommand.addEventListener(Event.SELECT, this.onExportXML); 
+			
+			var exportJSONCommand:NativeMenuItem = exportAsMenu.submenu.addItem(new NativeMenuItem("JSON")); 
+			exportJSONCommand.addEventListener(Event.SELECT, this.onExportJSON); 
+			// ----
 			
 			var quitCommand:NativeMenuItem = fileMenu.submenu.addItem(new NativeMenuItem("Quit")); 
 			quitCommand.addEventListener(Event.SELECT, this.onQuit);  
 			
-			// ---- EDIT
+			// --------- EDIT
 			var editMenu:NativeMenuItem = _view.stage.nativeWindow.menu.addItem(new NativeMenuItem("Edit")); 
 			editMenu.submenu = new NativeMenu(); 
 			
 			var loadImageCommand:NativeMenuItem = editMenu.submenu.addItem(new NativeMenuItem("Load Image")); 
 			loadImageCommand.addEventListener(Event.SELECT, this.onLoadImage);
 			
-			// ---- HELP
+			// ---- NODE SCALE
+			var nodeSizeMenu:NativeMenuItem = editMenu.submenu.addItem(new NativeMenuItem("Node Scale")); 
+			nodeSizeMenu.submenu = new NativeMenu();
+			
+			var node100:NativeMenuItem = nodeSizeMenu.submenu.addItem(new NativeMenuItem("100%")); 
+			node100.addEventListener(Event.SELECT, this.onNodeScaleChanged);
+			
+			var node75:NativeMenuItem = nodeSizeMenu.submenu.addItem(new NativeMenuItem("75%")); 
+			node75.addEventListener(Event.SELECT, this.onNodeScaleChanged);
+			
+			var node50:NativeMenuItem = nodeSizeMenu.submenu.addItem(new NativeMenuItem("50%")); 
+			node50.addEventListener(Event.SELECT, this.onNodeScaleChanged);
+			
+			var node25:NativeMenuItem = nodeSizeMenu.submenu.addItem(new NativeMenuItem("25%")); 
+			node25.addEventListener(Event.SELECT, this.onNodeScaleChanged);
+			// ----
+			
+			// --------- HELP
 			var helpMenu:NativeMenuItem = _view.stage.nativeWindow.menu.addItem(new NativeMenuItem("Help")); 
 			helpMenu.submenu = new NativeMenu(); 
 			
@@ -112,6 +143,7 @@ package controllers
 			_view.removeEventListener(MouseEvent.MOUSE_WHEEL, this.onMouseWheel);
 			
 			_view.stage.removeEventListener(KeyboardEvent.KEY_DOWN, this.onKeyDown);
+			_view.stage.removeEventListener(KeyboardEvent.KEY_UP, this.onKeyUp);
 			
 			_projectModel.removeEventListener(ToolEvent.TOOL_CHANGED, this.onToolChanged);
 			_projectModel.removeEventListener(NodeEvent.NODE_ADDED, this.onNodeAdded);
@@ -119,6 +151,70 @@ package controllers
 			
 			_projectModel = null;
 			_view = null;
+		}
+		
+		private function onExportXML(e:Event):void
+		{
+			var file:File = new File();
+			file.browseForSave("Export XML");
+			file.addEventListener(Event.SELECT, this.onXMLLocationSelected);
+		}
+		
+		private function onXMLLocationSelected(e:Event):void
+		{
+			var file:File = e.currentTarget as File;
+			file.removeEventListener(Event.SELECT, this.onXMLLocationSelected);
+			
+			var data:String = _projectModel.exportXML();
+			if (file.extension != "xml")
+			{
+				file.nativePath += ".xml";
+			}
+			
+			var stream:FileStream = new FileStream();
+			stream.open(file, FileMode.WRITE);
+			stream.writeUTFBytes(data);
+			stream.close();	
+			
+			LogManager.logInfo(this, "Successfully export XML: " + file.name);
+		}
+		
+		private function onExportJSON(e:Event):void
+		{
+			var file:File = new File();
+			file.browseForSave("Export JSON");
+			file.addEventListener(Event.SELECT, this.onJSONLocationSelected);
+		}
+		
+		private function onJSONLocationSelected(e:Event):void
+		{
+			var file:File = e.currentTarget as File;
+			file.removeEventListener(Event.SELECT, this.onJSONLocationSelected);
+			
+			var data:String = _projectModel.exportJSON();
+			if (file.extension != "json")
+			{
+				file.nativePath += ".json";
+			}
+			
+			var stream:FileStream = new FileStream();
+			stream.open(file, FileMode.WRITE);
+			stream.writeUTFBytes(data);
+			stream.close();	
+			
+			LogManager.logInfo(this, "Successfully exported JSON: " + file.name);
+		}
+		
+		
+		private function onNodeScaleChanged(e:Event):void
+		{
+			var menuItem:NativeMenuItem = e.currentTarget as NativeMenuItem;
+			switch (menuItem.label) {
+				case "100%": _projectModel.nodeScale = 1.0; break;
+				case "75%": _projectModel.nodeScale = 0.75; break;
+				case "50%": _projectModel.nodeScale = 0.50; break;
+				case "25%": _projectModel.nodeScale = 0.25; break;
+			}
 		}
 		
 		private function onLoadImage(e:Event):void
@@ -157,19 +253,19 @@ package controllers
 			_projectModel.removeAllNodes();
 		}
 		
-		private function onOpen(e:Event):void
+		private function onOpenProject(e:Event):void
 		{
 			// TODO: prompt user to save current project
 			
 			var file:File = new File();
 			file.browseForOpen("Open Project", [ new FileFilter("Nodelayer Projects", "*.nlp") ]);
-			file.addEventListener(Event.SELECT, this.onOpenLocationSelected);
+			file.addEventListener(Event.SELECT, this.onOpenProjectLocationSelected);
 		}
 		
-		private function onOpenLocationSelected(e:Event):void
+		private function onOpenProjectLocationSelected(e:Event):void
 		{
 			var file:File = e.currentTarget as File;
-			file.removeEventListener(Event.SELECT, this.onOpenLocationSelected);
+			file.removeEventListener(Event.SELECT, this.onOpenProjectLocationSelected);
 			
 			var stream:FileStream = new FileStream();
 			stream.open(file, FileMode.READ);
@@ -180,23 +276,23 @@ package controllers
 			
 			stream.close();	
 			
-			LogManager.logInfo(this, "Successfully loaded " + file.name);
+			LogManager.logInfo(this, "Successfully loaded project: " + file.name);
 		}
 		
-		private function onSave(e:Event):void
+		private function onSaveProject(e:Event):void
 		{
 			var file:File = new File();
 			file.browseForSave("Save Project");
-			file.addEventListener(Event.SELECT, this.onSaveLocationSelected);
+			file.addEventListener(Event.SELECT, this.onSaveProjectLocationSelected);
 		}
 		
-		private function onSaveLocationSelected(e:Event):void
+		private function onSaveProjectLocationSelected(e:Event):void
 		{
 			var file:File = e.currentTarget as File;
-			file.removeEventListener(Event.SELECT, this.onSaveLocationSelected);
+			file.removeEventListener(Event.SELECT, this.onSaveProjectLocationSelected);
 			
 			var data:String = _projectModel.saveProject();
-			if (file.extension != ".nlp")
+			if (file.extension != "nlp")
 			{
 				file.nativePath += ".nlp";
 			}
@@ -206,7 +302,7 @@ package controllers
 			stream.writeUTFBytes(data);
 			stream.close();	
 			
-			LogManager.logInfo(this, "Successfully saved " + file.name);
+			LogManager.logInfo(this, "Successfully saved project: " + file.name);
 		}
 		
 		private function onQuit(e:Event):void
@@ -234,6 +330,20 @@ package controllers
 					{
 						ViewManager.addView("Debug");
 					}
+					break;
+					
+				case Keyboard.SHIFT:
+					_isShiftPressed = true;
+					break;
+			}
+		}
+		
+		private function onKeyUp(e:KeyboardEvent):void
+		{
+			switch (e.keyCode)
+			{
+				case Keyboard.SHIFT:
+					_isShiftPressed = false;
 					break;
 			}
 		}
@@ -389,8 +499,26 @@ package controllers
 					break;
 					
 				case ToolType.MODIFY:
-					selectNode(node);
-					dragSelectedNodes();
+					var nodeState:NodeState = _projectModel.getNode(node.id);
+					if (!nodeState.isSelected && !_isShiftPressed) 
+					{
+						deselectAllNodes();
+					} 
+					else 
+					{
+						if (_overNode == null) 
+						{
+							deselectAllNodes();
+						}
+					}
+					
+					if (_overNode != null)
+					{
+						selectNode(_overNode);
+						dragSelectedNodes();
+					}
+					//selectNode(node);
+					//dragSelectedNodes();
 					break;
 					
 				case ToolType.CONNECT:
@@ -489,11 +617,13 @@ package controllers
 		
 		private function selectNode(node:Node):void
 		{
-			_selectedNodes.push(node);
-			node.gotoAndStop("_selectedHover");
-			
 			var nodeState:NodeState = _projectModel.getNode(node.id);
-			nodeState.isSelected = true;
+			if (!nodeState.isSelected) 
+			{
+				_selectedNodes.push(node);
+				node.gotoAndStop("_selectedHover");	
+				nodeState.isSelected = true;
+			}
 		}
 		
 		private function deselectAllNodes():void
