@@ -2,7 +2,7 @@
 <application xmlns="http://ns.adobe.com/air/application/3.9">
 	
 	<id>Nodelayer</id> 
-	<versionNumber>0.1.1</versionNumber> 
+	<versionNumber>0.2.0</versionNumber> 
 	<filename>Nodelayer</filename> 
 	
 	<name>Nodelayer</name> 
