@@ -56,11 +56,11 @@ package controllers
 			_isShiftPressed = false;
 			
 			_view = view as MainView;
-			_view.addEventListener(MouseEvent.MOUSE_DOWN, this.onMouseDown);
-			_view.addEventListener(MouseEvent.MOUSE_UP, this.onMouseUp);
-			_view.addEventListener(MouseEvent.MOUSE_WHEEL, this.onMouseWheel);
-			_view.addEventListener(MouseEvent.MIDDLE_MOUSE_DOWN, this.onMiddleMouseDown);
-			_view.addEventListener(MouseEvent.MIDDLE_MOUSE_UP, this.onMiddleMouseUp);
+			_view.stage.addEventListener(MouseEvent.MOUSE_DOWN, this.onMouseDown);
+			_view.stage.addEventListener(MouseEvent.MOUSE_UP, this.onMouseUp);
+			_view.stage.addEventListener(MouseEvent.MOUSE_WHEEL, this.onMouseWheel);
+			_view.stage.addEventListener(MouseEvent.MIDDLE_MOUSE_DOWN, this.onMiddleMouseDown);
+			_view.stage.addEventListener(MouseEvent.MIDDLE_MOUSE_UP, this.onMiddleMouseUp);
 			
 			_view.stage.addEventListener(KeyboardEvent.KEY_DOWN, this.onKeyDown);
 			_view.stage.addEventListener(KeyboardEvent.KEY_UP, this.onKeyUp);
