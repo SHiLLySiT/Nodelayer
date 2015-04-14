@@ -156,9 +156,14 @@ package controllers
 		
 		private function onExportXML(e:Event):void
 		{
-			var file:File = new File();
-			file.browseForSave("Export XML");
-			file.addEventListener(Event.SELECT, this.onXMLLocationSelected);
+			if (_projectModel.projectFilePath != null) {
+				var file:File = new File();
+				file.browseForSave("Export XML");
+				file.addEventListener(Event.SELECT, this.onXMLLocationSelected);
+			} else {
+				// TODO: show notification popup
+				LogManager.logError(this, "You must save the project before exporting!");
+			}
 		}
 		
 		private function onXMLLocationSelected(e:Event):void
@@ -182,9 +187,14 @@ package controllers
 		
 		private function onExportJSON(e:Event):void
 		{
-			var file:File = new File();
-			file.browseForSave("Export JSON");
-			file.addEventListener(Event.SELECT, this.onJSONLocationSelected);
+			if (_projectModel.projectFilePath != null) {
+				var file:File = new File();
+				file.browseForSave("Export JSON");
+				file.addEventListener(Event.SELECT, this.onJSONLocationSelected);
+			} else {
+				// TODO: show notification popup
+				LogManager.logError(this, "You must save the project before exporting!");
+			}
 		}
 		
 		private function onJSONLocationSelected(e:Event):void
@@ -206,7 +216,6 @@ package controllers
 			LogManager.logInfo(this, "Successfully exported JSON: " + file.name);
 		}
 		
-		
 		private function onNodeScaleChanged(e:Event):void
 		{
 			var menuItem:NativeMenuItem = e.currentTarget as NativeMenuItem;
@@ -227,9 +236,10 @@ package controllers
 		
 		private function onImageSelected(e:Event):void
 		{
-			var file:File = e.currentTarget as File;
-			// TODO: get relative path to project file
-			_projectModel.backgroundImagePath = file.nativePath;
+			var imagefile:File = e.currentTarget as File;
+			var projectFile:File = new File(_projectModel.projectFilePath);
+			_projectModel.backgroundImagePath = projectFile.getRelativePath(imagefile, true);
+			//_projectModel.backgroundImagePath = file.nativePath;
 		}
 		
 		private function onOnlineDocumentation(e:Event):void
@@ -250,7 +260,8 @@ package controllers
 		
 		private function onNew(e:Event):void
 		{
-			_projectModel.backgroundImagePath = "";
+			_projectModel.projectFilePath = null;
+			_projectModel.backgroundImagePath = null;
 			_projectModel.removeAllNodes();
 		}
 		
@@ -267,6 +278,8 @@ package controllers
 		{
 			var file:File = e.currentTarget as File;
 			file.removeEventListener(Event.SELECT, this.onOpenProjectLocationSelected);
+			
+			_projectModel.projectFilePath = file.nativePath;
 			
 			var stream:FileStream = new FileStream();
 			stream.open(file, FileMode.READ);
@@ -297,6 +310,8 @@ package controllers
 			{
 				file.nativePath += ".nlp";
 			}
+			
+			_projectModel.projectFilePath = file.nativePath;
 			
 			var stream:FileStream = new FileStream();
 			stream.open(file, FileMode.WRITE);

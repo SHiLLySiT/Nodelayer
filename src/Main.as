@@ -35,7 +35,7 @@ package
 			
 			LogManager.initialize(this);
 			
-			// --------------------------- MODLES
+			// --------------------------- MODELS
 			ModelManager.initialize();
 			ModelManager.addModel(new ProjectModel());
 			ModelManager.addModel(new EditorModel());
