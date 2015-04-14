@@ -464,6 +464,7 @@ package controllers
 					break;
 					
 				case ToolType.CONNECT:
+					this.breakNodeConnections(node.id);
 					break;
 			}
 		}
@@ -569,6 +570,17 @@ package controllers
 			node.addEventListener(MouseEvent.MOUSE_UP, this.onNodeMouseUp);
 			node.addEventListener(MouseEvent.RIGHT_MOUSE_DOWN, this.onNodeRightMouseDown);
 			node.addEventListener(MouseEvent.DOUBLE_CLICK, this.onNodeDoubleClick);
+		}
+		
+		private function breakNodeConnections(node:int):void 
+		{
+			var nodeState:NodeState = _projectModel.getNode(node);
+			for each (var c:int in nodeState.connectedNodes) {
+				var state:NodeState = _projectModel.getNode(c);
+				var i:int = state.connectedNodes.indexOf(node);
+				state.connectedNodes.splice(i, 1);
+			}
+			nodeState.connectedNodes.length = 0;
 		}
 		
 		private function connectNodes(node1:int, node2:int):void
