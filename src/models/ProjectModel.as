@@ -19,11 +19,13 @@ package models
 		public function get currentTool():String { return _currentTool; }
 		public function set currentTool(value:String):void
 		{
-			if (this.hasEventListener(ToolEvent.TOOL_CHANGED))
-			{
-				this.dispatchEvent(new ToolEvent(ToolEvent.TOOL_CHANGED, _currentTool, value));
+			if (_currentTool != value) {
+				if (this.hasEventListener(ToolEvent.TOOL_CHANGED))
+				{
+					this.dispatchEvent(new ToolEvent(ToolEvent.TOOL_CHANGED, _currentTool, value));
+				}
+				_currentTool = value;
 			}
-			_currentTool = value;
 		}
 		
 		private var _backgroundImagePath:String;

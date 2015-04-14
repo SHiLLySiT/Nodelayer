@@ -387,7 +387,7 @@ package controllers
 		
 		private function onToolChanged(e:ToolEvent):void
 		{
-			
+			this.deselectAllNodes();
 		}
 		
 		private function onDragNodeUpdate(e:Event):void
