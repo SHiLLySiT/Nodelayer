@@ -49,6 +49,20 @@ package models
 			}
 		}
 		
+		private var _documentWidth:int;
+		public function get documentWidth():int { return _documentWidth; }
+		//public function set documentWidth(value:int):void 
+		//{
+		//	this._documentWidth = value;
+		//}
+		
+		private var _documentHeight:int;
+		public function get documentHeight():int { return _documentHeight; }
+		//public function set documentHeight(value:int):void 
+		//{
+		//	this._documentHeight = value;
+		//}
+		
 		private var _nodeCount:int;
 		public function get nodeCount():int { return _nodeCount; }
 		
@@ -62,6 +76,8 @@ package models
 		
 		public function initialize():void
 		{
+			_documentWidth = 800;
+			_documentHeight = 600;
 			_currentTool = ToolType.ADD;
 			_lastNodeID = -1;
 			_nodeStates = new Dictionary();

@@ -56,11 +56,11 @@ package controllers
 			_isShiftPressed = false;
 			
 			_view = view as MainView;
-			_view.stage.addEventListener(MouseEvent.MOUSE_DOWN, this.onMouseDown);
-			_view.stage.addEventListener(MouseEvent.MOUSE_UP, this.onMouseUp);
-			_view.stage.addEventListener(MouseEvent.MOUSE_WHEEL, this.onMouseWheel);
-			_view.stage.addEventListener(MouseEvent.MIDDLE_MOUSE_DOWN, this.onMiddleMouseDown);
-			_view.stage.addEventListener(MouseEvent.MIDDLE_MOUSE_UP, this.onMiddleMouseUp);
+			_view.addEventListener(MouseEvent.MOUSE_DOWN, this.onMouseDown);
+			_view.addEventListener(MouseEvent.MOUSE_UP, this.onMouseUp);
+			_view.addEventListener(MouseEvent.MOUSE_WHEEL, this.onMouseWheel);
+			_view.addEventListener(MouseEvent.MIDDLE_MOUSE_DOWN, this.onMiddleMouseDown);
+			_view.addEventListener(MouseEvent.MIDDLE_MOUSE_UP, this.onMiddleMouseUp);
 			
 			_view.stage.addEventListener(KeyboardEvent.KEY_DOWN, this.onKeyDown);
 			_view.stage.addEventListener(KeyboardEvent.KEY_UP, this.onKeyUp);
@@ -357,13 +357,18 @@ package controllers
 		{
 			for (var i:int = 0; i < _selectedNodes.length; i++)
 			{
+				var newX:Number = _view.mouseX + _selectedNodeOffsets[i].x;
+				var newY:Number = _view.mouseY + _selectedNodeOffsets[i].y;
+				newX = (newX < 0) ? 0 : (newX > _projectModel.documentWidth) ? _projectModel.documentWidth : newX;
+				newY = (newY < 0) ? 0 : (newY > _projectModel.documentHeight) ? _projectModel.documentHeight : newY;
+				
 				var node:Node = _selectedNodes[i];
-				node.x = _view.mouseX + _selectedNodeOffsets[i].x;
-				node.y = _view.mouseY + _selectedNodeOffsets[i].y;
+				node.x = newX;
+				node.y = newY;
 				
 				var nodeState:NodeState = _projectModel.getNode(node.id);
-				nodeState.x = node.x;
-				nodeState.y = node.y;
+				nodeState.x = newX;
+				nodeState.y = newY;
 			}
 		}
 		

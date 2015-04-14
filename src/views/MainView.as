@@ -36,6 +36,8 @@ package views
 		{
 			super.initialize();
 			
+			this.stage.color = 0xF3F3F3;
+			
 			_connectToolLineNode = null;
 			_nodes = new Dictionary();
 			_projectModel = ModelManager.getModel(ProjectModel) as ProjectModel;
