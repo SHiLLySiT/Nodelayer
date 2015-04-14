@@ -15,6 +15,7 @@ package controllers
 		public function get view():View { return _view; }
 		
 		private var _projectModel:ProjectModel;
+		private var _isControlPressed:Boolean;
 		
 		public function ToolbarController() 
 		{
@@ -24,9 +25,10 @@ package controllers
 		public function initialize(id:String, view:View, data:Object = null):void
 		{
 			_id = id;
-			
+			_isControlPressed = false;
 			_view = view as ToolbarView;
 			_view.stage.addEventListener(KeyboardEvent.KEY_DOWN, this.onKeyDown);
+			_view.stage.addEventListener(KeyboardEvent.KEY_UP, this.onKeyUp);
 			
 			_projectModel = ModelManager.getModel(ProjectModel) as ProjectModel;
 			
@@ -44,18 +46,31 @@ package controllers
 			_projectModel = null;
 		}
 		
+		private function onKeyUp(e:KeyboardEvent):void
+		{
+			switch (e.keyCode)
+			{
+				case Keyboard.CONTROL:
+					_isControlPressed = false;
+					break
+			}
+		}
+		
 		private function onKeyDown(e:KeyboardEvent):void
 		{
 			switch (e.keyCode)
 			{
+				case Keyboard.CONTROL:
+					_isControlPressed = true;
+					break
 				case Keyboard.NUMBER_1: 
-					_projectModel.currentTool = ToolType.ADD;
+					if (!_isControlPressed) _projectModel.currentTool = ToolType.ADD;
 					break;
 				case Keyboard.NUMBER_2:
-					_projectModel.currentTool = ToolType.MODIFY;
+					if (!_isControlPressed) _projectModel.currentTool = ToolType.MODIFY;
 					break;
 				case Keyboard.NUMBER_3:
-					_projectModel.currentTool = ToolType.CONNECT;
+					if (!_isControlPressed) _projectModel.currentTool = ToolType.CONNECT;
 					break;
 			}
 		}

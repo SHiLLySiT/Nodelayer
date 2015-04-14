@@ -40,6 +40,7 @@ package controllers
 		private var _currentConnectToolNode:Node;
 		private var _dragOffset:Point;
 		private var _isShiftPressed:Boolean;
+		private var _isControlPressed:Boolean;
 		
 		public function MainController() 
 		{
@@ -320,6 +321,18 @@ package controllers
 		{
 			switch (e.keyCode)
 			{
+				case Keyboard.NUMBER_1:
+					if (_isControlPressed) setDocumentScale(1.0);
+					break;
+					
+				case Keyboard.EQUAL:
+					if (_isControlPressed) setDocumentScale(_view.scaleX + 0.2);
+					break;
+					
+				case Keyboard.MINUS:
+					if (_isControlPressed) setDocumentScale(_view.scaleX - 0.2);
+					break;
+					
 				case Keyboard.BACKQUOTE:
 					var view:View = ViewManager.getViewById("Debug");
 					if (view != null)
@@ -332,6 +345,10 @@ package controllers
 					}
 					break;
 					
+				case Keyboard.CONTROL:
+					_isControlPressed = true;
+					break;
+					
 				case Keyboard.SHIFT:
 					_isShiftPressed = true;
 					break;
@@ -342,9 +359,29 @@ package controllers
 		{
 			switch (e.keyCode)
 			{
+				case Keyboard.CONTROL:
+					_isControlPressed = false;
+					break;
+					
 				case Keyboard.SHIFT:
 					_isShiftPressed = false;
 					break;
+			}
+		}
+		
+		private function setDocumentScale(newScale:Number):void
+		{
+			if (newScale < 0.1) 
+			{
+				_view.scaleX = _view.scaleY = 0.1;
+			} 
+			else if (newScale > 4.0) 
+			{
+				_view.scaleX = _view.scaleY = 4.0;
+			}
+			else
+			{
+				_view.scaleX = _view.scaleY = newScale;
 			}
 		}
 		
@@ -399,8 +436,9 @@ package controllers
 		
 		private function onMouseWheel(e:MouseEvent):void
 		{
-			// TODO: scaling
-			//_view.scaleX = _view.scaleY += e.delta * 0.01;
+			if (_isControlPressed) {
+				setDocumentScale(_view.scaleX + e.delta * 0.01);
+			}
 		}
 		
 		private function onMouseUp(e:MouseEvent):void
