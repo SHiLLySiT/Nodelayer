@@ -9,12 +9,15 @@ package views
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
 	import flash.events.MouseEvent;
+	import flash.filesystem.File;
 	import flash.net.URLRequest;
 	import flash.text.TextField;
 	import flash.utils.Dictionary;
 	import models.ProjectModel;
 	import models.state.NodeState;
 	import views.ui.Node;
+	import flash.events.SecurityErrorEvent;
+	import flash.system.Security;
 	
 	[Embed(source = "../../assets/Views.swf", symbol = "MainView")]
 	public class MainView extends View 
@@ -25,6 +28,7 @@ package views
 		private var _projectModel:ProjectModel;
 		private var _connectionLayer:Sprite;
 		private var _backgroundImageLoader:Loader;
+		public function get backgroundImageLoader():Loader { return this._backgroundImageLoader; }
 		private var _connectToolLineNode:Node;
 		
 		public function MainView(id:String) 
@@ -44,6 +48,7 @@ package views
 			
 			_backgroundImageLoader = new Loader();
 			_backgroundImageLoader.addEventListener(IOErrorEvent.IO_ERROR, this.onErrorLoadingBackgroundImage);
+			
 			this.addChild(_backgroundImageLoader);
 			
 			_connectionLayer = new Sprite();
@@ -86,7 +91,15 @@ package views
 			}
 			else
 			{
-				_backgroundImageLoader.load(new URLRequest(path));
+				// TODO: this throws an error if the image is in a folder outside of the NLP file folder
+				var projectFile:File = new File(_projectModel.projectFilePath);
+				var imagePath:String = projectFile.parent.url + "/" + path.replace("../", "")
+				LogManager.logInfo(this, "Loading image: " + imagePath);
+				if (imagePath.indexOf("../") == -1) {
+					_backgroundImageLoader.load(new URLRequest(imagePath));
+				} else {
+					LogManager.logError(this, "File must be in the same folder as the project (.NPL) file!");
+				}
 			}
 		}
 		

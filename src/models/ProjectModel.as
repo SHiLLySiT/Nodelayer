@@ -28,6 +28,13 @@ package models
 			}
 		}
 		
+		private var _projectFilePath:String;
+		public function get projectFilePath():String { return _projectFilePath; }
+		public function set projectFilePath(value:String):void 
+		{
+			_projectFilePath = value;
+		}
+		
 		private var _backgroundImagePath:String;
 		public function get backgroundImagePath():String { return _backgroundImagePath; }
 		public function set backgroundImagePath(value:String):void 
@@ -84,6 +91,8 @@ package models
 			_lastNodeID = -1;
 			_nodeStates = new Dictionary();
 			_nodeScale = 1.0;
+			_projectFilePath = null;
+			_backgroundImagePath = null;
 		}
 		
 		public function newProject():void
