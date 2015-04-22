@@ -17,6 +17,7 @@
   <classpaths>
     <class path="src" />
     <class path="lib\fp-util" />
+    <class path="lib" />
   </classpaths>
   <!-- Build options -->
   <build>

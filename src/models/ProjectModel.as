@@ -5,6 +5,7 @@ package models
 	import events.NodeScaleEvent;
 	import events.ToolEvent;
 	import flash.events.EventDispatcher;
+	import flash.filesystem.File;
 	import flash.utils.Dictionary;
 	import flash.xml.XMLDocument;
 	import flash.xml.XMLNode;
@@ -28,18 +29,11 @@ package models
 			}
 		}
 		
-		private var _projectFilePath:String;
-		public function get projectFilePath():String { return _projectFilePath; }
-		public function set projectFilePath(value:String):void 
+		private var _backgroundImageFile:File;
+		public function get backgroundImageFile():File { return _backgroundImageFile; }
+		public function set backgroundImageFile(value:File):void 
 		{
-			_projectFilePath = value;
-		}
-		
-		private var _backgroundImagePath:String;
-		public function get backgroundImagePath():String { return _backgroundImagePath; }
-		public function set backgroundImagePath(value:String):void 
-		{
-			_backgroundImagePath = value;
+			_backgroundImageFile = value;
 			
 			if (this.hasEventListener(BackgroundImageEvent.CHANGED))
 			{
@@ -91,8 +85,7 @@ package models
 			_lastNodeID = -1;
 			_nodeStates = new Dictionary();
 			_nodeScale = 1.0;
-			_projectFilePath = null;
-			_backgroundImagePath = null;
+			_backgroundImageFile = null;
 		}
 		
 		public function newProject():void
@@ -223,13 +216,15 @@ package models
 			return data;
 		}
 		
-		public function saveProject():String
+		public function saveProject(directory:File):String
 		{
+			var relativePath:String = directory.getRelativePath(backgroundImageFile, true);
+			
 			var data:String = '<project version="' + ApplicationUtility.getVersion() + '">';
 			
 			// project settings
 			data += '\n\t<settings>'
-				+ '\n\t\t<bgImagePath>' + ((_backgroundImagePath == null) ? "" : _backgroundImagePath) + '</bgImagePath>'
+				+ '\n\t\t<bgImagePath>' + ((_backgroundImageFile == null) ? "" : relativePath) + '</bgImagePath>'
 				+ '\n\t\t<nodeScale>' + _nodeScale + '</nodeScale>'
 				+ '\n\t</settings>'
 			
@@ -265,7 +260,7 @@ package models
 			return data;
 		}
 		
-		public function loadProject(data:String):void
+		public function loadProject(directory:File, data:String):void
 		{
 			var xml:XML = new XML(data);
 			
@@ -277,7 +272,7 @@ package models
 			}
 			
 			// bg image
-			backgroundImagePath = xml.settings.bgImagePath;
+			backgroundImageFile = directory.resolvePath(xml.settings.bgImagePath);
 			nodeScale = xml.settings.nodeScale;
 			
 			// nodes

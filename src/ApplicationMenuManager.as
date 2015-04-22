@@ -92,14 +92,9 @@ package
 		
 		private function onExportXML(e:Event):void
 		{
-			if (_projectModel.projectFilePath != null) {
-				var file:File = new File();
-				file.browseForSave("Export XML");
-				file.addEventListener(Event.SELECT, this.onXMLLocationSelected);
-			} else {
-				// TODO: show notification popup
-				LogManager.logError(this, "You must save the project before exporting!");
-			}
+			var file:File = new File();
+			file.browseForSave("Export XML");
+			file.addEventListener(Event.SELECT, this.onXMLLocationSelected);
 		}
 		
 		private function onXMLLocationSelected(e:Event):void
@@ -123,14 +118,9 @@ package
 		
 		private function onExportJSON(e:Event):void
 		{
-			if (_projectModel.projectFilePath != null) {
-				var file:File = new File();
-				file.browseForSave("Export JSON");
-				file.addEventListener(Event.SELECT, this.onJSONLocationSelected);
-			} else {
-				// TODO: show notification popup
-				LogManager.logError(this, "You must save the project before exporting!");
-			}
+			var file:File = new File();
+			file.browseForSave("Export JSON");
+			file.addEventListener(Event.SELECT, this.onJSONLocationSelected);
 		}
 		
 		private function onJSONLocationSelected(e:Event):void
@@ -173,9 +163,7 @@ package
 		private function onImageSelected(e:Event):void
 		{
 			var imagefile:File = e.currentTarget as File;
-			var projectFile:File = new File(_projectModel.projectFilePath);
-			_projectModel.backgroundImagePath = projectFile.getRelativePath(imagefile, true);
-			//_projectModel.backgroundImagePath = file.nativePath;
+			_projectModel.backgroundImageFile = imagefile;
 		}
 		
 		private function onOnlineDocumentation(e:Event):void
@@ -196,8 +184,7 @@ package
 		
 		private function onNew(e:Event):void
 		{
-			_projectModel.projectFilePath = null;
-			_projectModel.backgroundImagePath = null;
+			_projectModel.backgroundImageFile = null;
 			_projectModel.removeAllNodes();
 		}
 		
@@ -205,56 +192,57 @@ package
 		{
 			// TODO: prompt user to save current project
 			
-			var file:File = new File();
-			file.browseForOpen("Open Project", [ new FileFilter("Nodelayer Projects", "*.nlp") ]);
-			file.addEventListener(Event.SELECT, this.onOpenProjectLocationSelected);
+			var directory:File = new File();
+			directory.browseForDirectory("Open Project");
+			directory.addEventListener(Event.SELECT, this.onOpenProjectLocationSelected);
 		}
 		
 		private function onOpenProjectLocationSelected(e:Event):void
 		{
-			var file:File = e.currentTarget as File;
-			file.removeEventListener(Event.SELECT, this.onOpenProjectLocationSelected);
+			var directory:File = e.currentTarget as File;
+			directory.removeEventListener(Event.SELECT, this.onOpenProjectLocationSelected);
 			
-			_projectModel.projectFilePath = file.nativePath;
+			var projectFile:File = new File(directory.nativePath + "/" + directory.name + ".nlp");
 			
 			var stream:FileStream = new FileStream();
-			stream.open(file, FileMode.READ);
-			
+			stream.open(projectFile, FileMode.READ);
 			var data:String = stream.readUTFBytes(stream.bytesAvailable);
 			_projectModel.newProject();
-			_projectModel.loadProject(data);
-			
+			_projectModel.loadProject(directory, data);
 			stream.close();	
 			
-			LogManager.logInfo(this, "Successfully loaded project: " + file.name);
+			LogManager.logInfo(this, "Successfully loaded project: " + directory.name);
 		}
 		
 		private function onSaveProject(e:Event):void
 		{
-			var file:File = new File();
-			file.browseForSave("Save Project");
-			file.addEventListener(Event.SELECT, this.onSaveProjectLocationSelected);
+			var directory:File = new File();
+			directory.browseForDirectory("Save Project");
+			directory.addEventListener(Event.SELECT, this.onSaveProjectLocationSelected);
 		}
 		
 		private function onSaveProjectLocationSelected(e:Event):void
 		{
-			var file:File = e.currentTarget as File;
-			file.removeEventListener(Event.SELECT, this.onSaveProjectLocationSelected);
+			var directory:File = e.currentTarget as File;
+			directory.removeEventListener(Event.SELECT, this.onSaveProjectLocationSelected);
 			
-			var data:String = _projectModel.saveProject();
-			if (file.extension != "nlp")
+			// copy image to project folder if it doesnt already exist
+			if (_projectModel.backgroundImageFile.nativePath.indexOf(directory.nativePath) == -1) 
 			{
-				file.nativePath += ".nlp";
+				var file:File = new File(directory.nativePath + "/" + _projectModel.backgroundImageFile.name);
+				_projectModel.backgroundImageFile.copyTo(file, true);
+				_projectModel.backgroundImageFile = file;
 			}
 			
-			_projectModel.projectFilePath = file.nativePath;
+			var projectFile:File = new File(directory.nativePath + "/" + directory.name + ".nlp");
+			var data:String = _projectModel.saveProject(directory);
 			
 			var stream:FileStream = new FileStream();
-			stream.open(file, FileMode.WRITE);
+			stream.open(projectFile, FileMode.WRITE);
 			stream.writeUTFBytes(data);
 			stream.close();	
 			
-			LogManager.logInfo(this, "Successfully saved project: " + file.name);
+			LogManager.logInfo(this, "Successfully saved project: " + directory.name);
 		}
 		
 		private function onQuit(e:Event):void
