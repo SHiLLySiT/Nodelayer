@@ -13,6 +13,8 @@ package views
 		public function AboutView(id:String) 
 		{
 			super(id);	
+			
+			this.dragTarget = this;
 		}
 		
 		override public function initialize():void 

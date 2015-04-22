@@ -1,11 +1,19 @@
 package views 
 {
+	import flash.display.DisplayObject;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.geom.Point;
 
 	public class DraggableView extends View
 	{
+		private var _dragTarget:DisplayObject;
+		public function get dragTarget():DisplayObject { return this._dragTarget; }
+		public function set dragTarget(value:DisplayObject):void
+		{
+			this._dragTarget = value;
+		}
+		
 		private var _dragOffset:Point;
 		
 		public function DraggableView(id:String) 
@@ -18,14 +26,14 @@ package views
 		{
 			super.initialize();
 			
-			this.addEventListener(MouseEvent.MOUSE_DOWN, this.onMouseDown);
+			if (dragTarget != null) this._dragTarget.addEventListener(MouseEvent.MOUSE_DOWN, this.onMouseDown);
 		}
 		
 		override public function deinitialize():void 
 		{
 			super.deinitialize();
 			
-			this.removeEventListener(MouseEvent.MOUSE_DOWN, this.onMouseDown);
+			if (dragTarget != null) this._dragTarget.addEventListener(MouseEvent.MOUSE_DOWN, this.onMouseDown);
 			this.removeEventListener(Event.ENTER_FRAME, this.onDrag);
 			this.removeEventListener(MouseEvent.MOUSE_UP, this.onDragStop);
 		}

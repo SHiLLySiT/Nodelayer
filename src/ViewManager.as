@@ -1,6 +1,5 @@
 package 
 {
-	import controllers.IController;
 	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
 	import flash.display.Sprite;
@@ -14,16 +13,14 @@ package
 		private static var _currentScene:DisplayObjectContainer;
 		public static function get currentScene():DisplayObjectContainer { return _currentScene; }
 		
-		private static var _views:Vector.<View>;
-		private static var _controllers:Vector.<IController>
+		private static var _activeViews:Vector.<View>;
 		private static var _registeredViews:Dictionary;
 		
 		public static function initialize(container:DisplayObjectContainer):void
 		{
 			_sceneContainer = container;
 			_registeredViews = new Dictionary();
-			_views = new Vector.<View>();
-			_controllers = new Vector.<IController>();
+			_activeViews = new Vector.<View>();
 		}
 		
 		/**
@@ -32,31 +29,20 @@ package
 		 * @param	view
 		 * @param	controller
 		 */
-		public static function registerView(id:String, view:Class, controller:Class):void
+		public static function registerView(id:String, view:Class):void
 		{
-			_registeredViews[id] = { view:view, controller:controller };
+			_registeredViews[id] = view;
 		}
 		
 		/**
-		 * Loads a list of registered views. Example "View1", "View2", "View3" OR "View1", {id:"View2", data:{ someBool:true } }, "View3"
+		 * Loads a list of registered views.
 		 * @param	...args	 
 		 */
 		public static function loadScene(...args):void
 		{
 			for each(var arg:* in args)
 			{
-				if (arg is String)
-				{
-					addView(arg);
-				}
-				else if (arg is Object)
-				{
-					addView(arg.id, arg.data);
-				}
-				else
-				{
-					LogManager.logError(ViewManager, "Invalid data!");
-				}
+				addView(arg);
 			}
 		}
 		
@@ -66,7 +52,7 @@ package
 		 * @param	data
 		 * @param	depth
 		 */
-		public static function addView(id:String, data:Object = null, depth:int = -1):void
+		public static function addView(id:String, depth:int = -1):void
 		{
 			if (_registeredViews[id] == null)
 			{
@@ -80,7 +66,7 @@ package
 				_sceneContainer.addChild(_currentScene);
 			}
 			
-			var view:View = new _registeredViews[id].view(id);
+			var view:View = new _registeredViews[id](id);
 			if (depth < 0)
 			{
 				_currentScene.addChild(view);
@@ -89,11 +75,7 @@ package
 			{
 				_currentScene.addChildAt(view, depth);
 			}
-			_views.push(view);
-			
-			var controller:IController = new _registeredViews[id].controller;
-			controller.initialize(id, view, data);
-			_controllers.push(controller);
+			_activeViews.push(view);
 		}
 		
 		/**
@@ -103,7 +85,7 @@ package
 		 */
 		public static function getViewByType(type:Class):View
 		{
-			for each(var v:View in _views)
+			for each(var v:View in _activeViews)
 			{
 				if (v is type)
 				{
@@ -120,45 +102,11 @@ package
 		 */
 		public static function getViewById(id:String):View
 		{
-			for each(var v:View in _views)
+			for each(var v:View in _activeViews)
 			{
 				if (v.id == id)
 				{
 					return v;
-				}
-			}
-			return null;
-		}
-		
-		/**
-		 * Returns the view of the specified type. Returns null if nothing found.
-		 * @param	controller
-		 * @return
-		 */
-		public static function getControllerByType(type:Class):IController
-		{
-			for each(var c:IController in _controllers)
-			{
-				if (c is type)
-				{
-					return c;
-				}
-			}
-			return null;
-		}
-		
-		/**
-		 * Returns the view of the specified id. Returns null if nothing found.
-		 * @param	controller
-		 * @return
-		 */
-		public static function getControllerById(id:String):IController
-		{
-			for each(var c:IController in _controllers)
-			{
-				if (c.id == id)
-				{
-					return c;
 				}
 			}
 			return null;
@@ -171,12 +119,11 @@ package
 		public static function removeView(view:View):void
 		{
 			_currentScene.removeChild(view);
-			for (var i:int = 0; i < _views.length; i++)
+			for (var i:int = 0; i < _activeViews.length; i++)
 			{
-				if (_views[i] == view)
+				if (_activeViews[i] == view)
 				{
-					_views.splice(i, 1);
-					_controllers.splice(i, 1);
+					_activeViews.splice(i, 1);
 					return;
 				}
 			}

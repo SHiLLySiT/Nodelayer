@@ -1,9 +1,5 @@
 package 
 {
-	import controllers.AboutController;
-	import controllers.MainController;
-	import controllers.DebugController;
-	import controllers.ToolbarController;
 	import flash.desktop.NativeApplication;
 	import flash.display.Sprite;
 	import flash.display.StageAlign;
@@ -42,13 +38,16 @@ package
 			
 			// --------------------------- VIEWS
 			ViewManager.initialize(this);
-			ViewManager.registerView("Main", MainView, MainController);
-			ViewManager.registerView("Toolbar", ToolbarView, ToolbarController);
-			ViewManager.registerView("Debug", DebugView, DebugController);
-			ViewManager.registerView("About", AboutView, AboutController);
+			ViewManager.registerView("Main", MainView);
+			ViewManager.registerView("Toolbar", ToolbarView);
+			ViewManager.registerView("Debug", DebugView);
+			ViewManager.registerView("About", AboutView);
 			
 			// --------------------------- LOAD PROGRAM
-			ViewManager.loadScene("Main", { id:"Toolbar", data: { x:250, y:0 }} );
+			var applicationMenuManager:ApplicationMenuManager = new ApplicationMenuManager();
+			applicationMenuManager.initialize(this);
+			
+			ViewManager.loadScene("Main", "Toolbar");
 			LogManager.logDebug(this, "Nodelayer " + ApplicationUtility.getVersion() + " started!");
 		}
 	}
