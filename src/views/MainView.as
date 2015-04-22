@@ -131,23 +131,16 @@ package views
 			return _nodes[id];
 		}
 		
-		public function setBackgroundImage(path:String):void
+		public function setBackgroundImage(file:File):void
 		{
-			if (path == "" || path == null)
+			if (file == null)
 			{
 				_backgroundImageLoader.unload();
 			}
 			else
 			{
-				// TODO: this throws an error if the image is in a folder outside of the NLP file folder
-				var projectFile:File = new File(_projectModel.projectFilePath);
-				var imagePath:String = projectFile.parent.url + "/" + path.replace("../", "")
-				LogManager.logInfo(this, "Loading image: " + imagePath);
-				if (imagePath.indexOf("../") == -1) {
-					_backgroundImageLoader.load(new URLRequest(imagePath));
-				} else {
-					LogManager.logError(this, "File must be in the same folder as the project (.NPL) file!");
-				}
+				LogManager.logInfo(this, "Loading image: " + file.nativePath);
+				_backgroundImageLoader.load(new URLRequest(file.nativePath));
 			}
 		}
 		
@@ -188,6 +181,120 @@ package views
 		{
 			_connectToolLineNode = startNode;
 			_connectToolLineNode.addEventListener(Event.ENTER_FRAME, onDrawConnectToolLine);
+		}
+		
+		private function setDocumentScale(newScale:Number):void
+		{
+			if (newScale < 0.1) 
+			{
+				this.scaleX = this.scaleY = 0.1;
+			} 
+			else if (newScale > 4.0) 
+			{
+				this.scaleX = this.scaleY = 4.0;
+			}
+			else
+			{
+				this.scaleX = this.scaleY = newScale;
+			}
+		}
+		
+		private function breakNodeConnections(node:int):void 
+		{
+			var nodeState:NodeState = _projectModel.getNode(node);
+			for each (var c:int in nodeState.connectedNodes) {
+				var state:NodeState = _projectModel.getNode(c);
+				var i:int = state.connectedNodes.indexOf(node);
+				state.connectedNodes.splice(i, 1);
+			}
+			nodeState.connectedNodes.length = 0;
+		}
+		
+		private function connectNodes(node1:int, node2:int):void
+		{
+			var node1State:NodeState = _projectModel.getNode(node1);
+			var node2State:NodeState = _projectModel.getNode(node2);
+			if (!node1State.hasConnection(node2) && !node2State.hasConnection(node1)) 
+			{
+				node1State.connectedNodes.push(node2);
+				node2State.connectedNodes.push(node1);
+			}
+		}
+		
+		private function createNode(connection:int = -1):int
+		{
+			var id:int = _projectModel.getNodeID();
+			
+			var nodeState:NodeState = new NodeState();
+			nodeState.id = id;
+			nodeState.x = this.mouseX;
+			nodeState.y = this.mouseY;
+			_projectModel.addNode(nodeState);
+			
+			if (connection != -1) 
+			{
+				// make two-way connection
+				var otherNode:NodeState = _projectModel.getNode(connection);
+				otherNode.connectedNodes.push(nodeState.id);
+				nodeState.connectedNodes.push(otherNode.id);
+			}
+			
+			return id;
+		}
+		
+		private function dragSelectedNodes():void
+		{
+			_selectedNodeOffsets = new Vector.<Point>();
+			for each (var n:Node in _selectedNodes)
+			{
+				_selectedNodeOffsets.push(new Point(n.x - this.mouseX, n.y - this.mouseY));
+			}
+			
+			this.stage.addEventListener(MouseEvent.MOUSE_UP, this.onDragNodeEnd);
+			this.stage.addEventListener(Event.ENTER_FRAME, this.onDragNodeUpdate);
+		}
+		
+		private function selectNode(node:Node):void
+		{
+			var nodeState:NodeState = _projectModel.getNode(node.id);
+			if (!nodeState.isSelected) 
+			{
+				_selectedNodes.push(node);
+				node.gotoAndStop("_selectedHover");	
+				nodeState.isSelected = true;
+			}
+		}
+		
+		private function deselectAllNodes():void
+		{
+			for each(var n:Node in this.nodes)
+			{
+				deselectNode(n);
+			}
+		}
+		
+		private function deselectNode(node:Node):void
+		{
+			_selectedNodes.length = 0;
+			node.gotoAndStop("_normal");
+			
+			var nodeState:NodeState = _projectModel.getNode(node.id);
+			nodeState.isSelected = false;
+		}
+		
+		private function selectAllNodesOnPath(node:Node):void
+		{
+			var nodeState:NodeState = _projectModel.getNode(node.id);
+			if (nodeState.isSelected) return;
+			
+			_selectedNodes.push(node);
+			selectNode(node);
+			
+			for each (var id:int in nodeState.connectedNodes)
+			{
+				var c:Node = this.getNode(id);
+				if (c != null) selectAllNodesOnPath(c);
+			}
 		}
 		
 		private function onNodeScaleChanged(e:NodeScaleEvent):void
@@ -275,11 +382,9 @@ package views
 			}
 		}
 		
-		
-		
 		private function onBackgroundImageChanged(e:BackgroundImageEvent):void
 		{
-			this.setBackgroundImage(_projectModel.backgroundImagePath);
+			this.setBackgroundImage(_projectModel.backgroundImageFile);
 		}
 		
 		private function onKeyDown(e:KeyboardEvent):void
@@ -331,22 +436,6 @@ package views
 				case Keyboard.SHIFT:
 					_isShiftPressed = false;
 					break;
-			}
-		}
-		
-		private function setDocumentScale(newScale:Number):void
-		{
-			if (newScale < 0.1) 
-			{
-				this.scaleX = this.scaleY = 0.1;
-			} 
-			else if (newScale > 4.0) 
-			{
-				this.scaleX = this.scaleY = 4.0;
-			}
-			else
-			{
-				this.scaleX = this.scaleY = newScale;
 			}
 		}
 		
@@ -567,105 +656,6 @@ package views
 			node.addEventListener(MouseEvent.RIGHT_MOUSE_DOWN, this.onNodeRightMouseDown);
 			node.addEventListener(MouseEvent.DOUBLE_CLICK, this.onNodeDoubleClick);
 		}
-		
-		private function breakNodeConnections(node:int):void 
-		{
-			var nodeState:NodeState = _projectModel.getNode(node);
-			for each (var c:int in nodeState.connectedNodes) {
-				var state:NodeState = _projectModel.getNode(c);
-				var i:int = state.connectedNodes.indexOf(node);
-				state.connectedNodes.splice(i, 1);
-			}
-			nodeState.connectedNodes.length = 0;
-		}
-		
-		private function connectNodes(node1:int, node2:int):void
-		{
-			var node1State:NodeState = _projectModel.getNode(node1);
-			var node2State:NodeState = _projectModel.getNode(node2);
-			if (!node1State.hasConnection(node2) && !node2State.hasConnection(node1)) 
-			{
-				node1State.connectedNodes.push(node2);
-				node2State.connectedNodes.push(node1);
-			}
-		}
-		
-		private function createNode(connection:int = -1):int
-		{
-			var id:int = _projectModel.getNodeID();
-			
-			var nodeState:NodeState = new NodeState();
-			nodeState.id = id;
-			nodeState.x = this.mouseX;
-			nodeState.y = this.mouseY;
-			_projectModel.addNode(nodeState);
-			
-			if (connection != -1) 
-			{
-				// make two-way connection
-				var otherNode:NodeState = _projectModel.getNode(connection);
-				otherNode.connectedNodes.push(nodeState.id);
-				nodeState.connectedNodes.push(otherNode.id);
-			}
-			
-			return id;
-		}
-		
-		private function dragSelectedNodes():void
-		{
-			_selectedNodeOffsets = new Vector.<Point>();
-			for each (var n:Node in _selectedNodes)
-			{
-				_selectedNodeOffsets.push(new Point(n.x - this.mouseX, n.y - this.mouseY));
-			}
-			
-			this.stage.addEventListener(MouseEvent.MOUSE_UP, this.onDragNodeEnd);
-			this.stage.addEventListener(Event.ENTER_FRAME, this.onDragNodeUpdate);
-		}
-		
-		private function selectNode(node:Node):void
-		{
-			var nodeState:NodeState = _projectModel.getNode(node.id);
-			if (!nodeState.isSelected) 
-			{
-				_selectedNodes.push(node);
-				node.gotoAndStop("_selectedHover");	
-				nodeState.isSelected = true;
-			}
-		}
-		
-		private function deselectAllNodes():void
-		{
-			for each(var n:Node in this.nodes)
-			{
-				deselectNode(n);
-			}
-		}
-		
-		private function deselectNode(node:Node):void
-		{
-			_selectedNodes.length = 0;
-			node.gotoAndStop("_normal");
-			
-			var nodeState:NodeState = _projectModel.getNode(node.id);
-			nodeState.isSelected = false;
-		}
-		
-		private function selectAllNodesOnPath(node:Node):void
-		{
-			var nodeState:NodeState = _projectModel.getNode(node.id);
-			if (nodeState.isSelected) return;
-			
-			_selectedNodes.push(node);
-			selectNode(node);
-			
-			for each (var id:int in nodeState.connectedNodes)
-			{
-				var c:Node = this.getNode(id);
-				if (c != null) selectAllNodesOnPath(c);
-			}
-		}
-		
 	}
 
 }
