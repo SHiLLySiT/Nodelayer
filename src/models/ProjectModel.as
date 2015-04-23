@@ -13,6 +13,7 @@ package models
 	import models.state.NodeState;
 	import types.ToolType;
 	import util.ApplicationUtility;
+	import views.AlertView;
 	
 	public class ProjectModel extends EventDispatcher implements IModel
 	{
@@ -232,13 +233,13 @@ package models
 		
 		public function saveProject(directory:File):String
 		{
-			var relativePath:String = directory.getRelativePath(backgroundImageFile, true);
+			var relativePath:String = (backgroundImageFile == null) ? "" : directory.getRelativePath(backgroundImageFile, true);
 			
 			var data:String = '<project version="' + ApplicationUtility.getVersion() + '">';
 			
 			// project settings
 			data += '\n\t<settings>'
-				+ '\n\t\t<bgImagePath>' + ((_backgroundImageFile == null) ? "" : relativePath) + '</bgImagePath>'
+				+ '\n\t\t<bgImagePath>' + relativePath + '</bgImagePath>'
 				+ '\n\t\t<nodeScale>' + _nodeScale + '</nodeScale>'
 				+ '\n\t</settings>'
 			
@@ -283,6 +284,9 @@ package models
 			if (xml.@version != ApplicationUtility.getVersion())
 			{
 				LogManager.logWarning(this, "Project was saved with a different version of Nodelayer!");
+				ViewManager.addView("Alert");
+				var alert:AlertView = ViewManager.getViewById("Alert") as AlertView;
+				alert.setContent("Project version mismatch", "The project opened was created with a different version of Node Layer!");
 			}
 			
 			// bg image

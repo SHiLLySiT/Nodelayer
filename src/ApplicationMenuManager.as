@@ -5,17 +5,22 @@ package
 	import flash.display.NativeMenu;
 	import flash.display.NativeMenuItem;
 	import flash.events.Event;
+	import flash.events.KeyboardEvent;
 	import flash.filesystem.File;
 	import flash.filesystem.FileMode;
 	import flash.filesystem.FileStream;
 	import flash.net.FileFilter;
 	import flash.net.URLRequest;
+	import flash.ui.Keyboard;
 	import models.ProjectModel;
 	import flash.net.navigateToURL;
+	import views.AlertView;
+	import views.ConfirmView;
 	
 	public class ApplicationMenuManager 
 	{
 		private var _projectModel:ProjectModel;
+		private var _isControlPressed:Boolean;
 		
 		public function ApplicationMenuManager() 
 		{
@@ -25,7 +30,8 @@ package
 		public function initialize(target:DisplayObjectContainer):void
 		{
 			this._projectModel = ModelManager.getModel(ProjectModel) as ProjectModel;
-			LogManager.logDebug(this, "MODEL:" + this._projectModel);
+			this._isControlPressed = false;
+			
 			target.stage.nativeWindow.menu = new NativeMenu(); 
 			
 			// ----------------------------------------- FILE
@@ -88,6 +94,77 @@ package
 			
 			var aboutCommand:NativeMenuItem = helpMenu.submenu.addItem(new NativeMenuItem("About")); 
 			aboutCommand.addEventListener(Event.SELECT, this.onAbout);
+			
+			// ----------------------------------------------------------- KEYBOARD SHORTCUTS
+			target.stage.addEventListener(KeyboardEvent.KEY_DOWN, this.onKeyDown);
+			target.stage.addEventListener(KeyboardEvent.KEY_UP, this.onKeyUp);
+		}
+		
+		private function newProjectConfirm():void
+		{
+			_projectModel.unsavedChanges = false;
+			_projectModel.projectDirectory = null;
+			_projectModel.backgroundImageFile = null;
+			_projectModel.removeAllNodes();
+		}
+		
+		private function saveProject(directory:File):void
+		{
+			_projectModel.unsavedChanges = false;
+			
+			// copy image to project folder if it doesnt already exist
+			if (_projectModel.backgroundImageFile != null
+			&& _projectModel.backgroundImageFile.nativePath.indexOf(directory.nativePath) == -1) 
+			{
+				var file:File = new File(directory.nativePath + "/" + _projectModel.backgroundImageFile.name);
+				_projectModel.backgroundImageFile.copyTo(file, true);
+				_projectModel.backgroundImageFile = file;
+			}
+			
+			this._projectModel.projectDirectory = directory;
+			
+			var projectFile:File = new File(directory.nativePath + "/" + directory.name + ".nlp");
+			var data:String = _projectModel.saveProject(directory);
+			
+			var stream:FileStream = new FileStream();
+			stream.open(projectFile, FileMode.WRITE);
+			stream.writeUTFBytes(data);
+			stream.close();	
+			
+			LogManager.logInfo(this, "Successfully saved project: " + directory.name);
+		}
+		
+		private function openProjectConfirm():void
+		{
+			var directory:File = new File();
+			directory.browseForDirectory("Open Project");
+			directory.addEventListener(Event.SELECT, this.onOpenProjectLocationSelected);
+		}
+		
+		private function onKeyDown(e:KeyboardEvent):void
+		{
+			switch (e.keyCode)
+			{
+				case Keyboard.S:
+					if (this._isControlPressed) {
+						this.onSaveProject(null);
+					}
+					break;
+					
+				case Keyboard.CONTROL:
+					this._isControlPressed = true;
+					break;
+			}
+		}
+		
+		private function onKeyUp(e:KeyboardEvent):void
+		{
+			switch (e.keyCode)
+			{
+				case Keyboard.CONTROL:
+					this._isControlPressed = false;
+					break;
+			}
 		}
 		
 		private function onExportXML(e:Event):void
@@ -184,25 +261,47 @@ package
 		
 		private function onNew(e:Event):void
 		{
-			_projectModel.backgroundImageFile = null;
-			_projectModel.removeAllNodes();
+			if (this._projectModel.unsavedChanges)
+			{
+				ViewManager.addView("Confirm");
+				var confirm:ConfirmView = ViewManager.getViewById("Confirm") as ConfirmView;
+				confirm.setContent("Unsaved changes", "All your changes will be lost. Are you sure you want to create a new project?", this.newProjectConfirm);
+			} else {
+				this.newProjectConfirm()
+			}
 		}
 		
 		private function onOpenProject(e:Event):void
 		{
-			// TODO: prompt user to save current project
-			
-			var directory:File = new File();
-			directory.browseForDirectory("Open Project");
-			directory.addEventListener(Event.SELECT, this.onOpenProjectLocationSelected);
+			if (this._projectModel.unsavedChanges)
+			{
+				ViewManager.addView("Confirm");
+				var confirm:ConfirmView = ViewManager.getViewById("Confirm") as ConfirmView;
+				confirm.setContent("Unsaved changes", "All your changes will be lost. Are you sure you want to open a project?", this.openProjectConfirm);
+			} else {
+				this.openProjectConfirm()
+			}
 		}
 		
 		private function onOpenProjectLocationSelected(e:Event):void
 		{
+			_projectModel.unsavedChanges = false;
+			
 			var directory:File = e.currentTarget as File;
 			directory.removeEventListener(Event.SELECT, this.onOpenProjectLocationSelected);
 			
 			var projectFile:File = new File(directory.nativePath + "/" + directory.name + ".nlp");
+			
+			if (!projectFile.exists)
+			{
+				LogManager.logError(this, "No .nlp file find in folder selected!");
+				ViewManager.addView("Alert");
+				var alert:AlertView = ViewManager.getViewById("Alert") as AlertView;
+				alert.setContent("No project file found", "There was no .nlp file found in the folder selected");
+				return;
+			}
+			
+			this._projectModel.projectDirectory = directory;
 			
 			var stream:FileStream = new FileStream();
 			stream.open(projectFile, FileMode.READ);
@@ -216,9 +315,16 @@ package
 		
 		private function onSaveProject(e:Event):void
 		{
-			var directory:File = new File();
-			directory.browseForDirectory("Save Project");
-			directory.addEventListener(Event.SELECT, this.onSaveProjectLocationSelected);
+			if (this._projectModel.projectDirectory != null)
+			{
+				this.saveProject(this._projectModel.projectDirectory);
+			} 
+			else 
+			{
+				var directory:File = new File();
+				directory.browseForDirectory("Save Project");
+				directory.addEventListener(Event.SELECT, this.onSaveProjectLocationSelected);
+			}
 		}
 		
 		private function onSaveProjectLocationSelected(e:Event):void
@@ -226,23 +332,7 @@ package
 			var directory:File = e.currentTarget as File;
 			directory.removeEventListener(Event.SELECT, this.onSaveProjectLocationSelected);
 			
-			// copy image to project folder if it doesnt already exist
-			if (_projectModel.backgroundImageFile.nativePath.indexOf(directory.nativePath) == -1) 
-			{
-				var file:File = new File(directory.nativePath + "/" + _projectModel.backgroundImageFile.name);
-				_projectModel.backgroundImageFile.copyTo(file, true);
-				_projectModel.backgroundImageFile = file;
-			}
-			
-			var projectFile:File = new File(directory.nativePath + "/" + directory.name + ".nlp");
-			var data:String = _projectModel.saveProject(directory);
-			
-			var stream:FileStream = new FileStream();
-			stream.open(projectFile, FileMode.WRITE);
-			stream.writeUTFBytes(data);
-			stream.close();	
-			
-			LogManager.logInfo(this, "Successfully saved project: " + directory.name);
+			this.saveProject(directory);
 		}
 		
 		private function onQuit(e:Event):void
