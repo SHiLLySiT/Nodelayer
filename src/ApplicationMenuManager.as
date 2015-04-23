@@ -103,9 +103,9 @@ package
 		private function newProjectConfirm():void
 		{
 			_projectModel.removeAllNodes();
-			_projectModel.unsavedChanges = false;
 			_projectModel.projectDirectory = null;
 			_projectModel.backgroundImageFile = null;
+			_projectModel.unsavedChanges = false;
 		}
 		
 		private function saveProject(directory:File):void
@@ -306,6 +306,8 @@ package
 			_projectModel.newProject();
 			_projectModel.loadProject(directory, data);
 			stream.close();	
+			
+			_projectModel.unsavedChanges = false;
 			
 			LogManager.logInfo(this, "Successfully loaded project: " + directory.name);
 		}
