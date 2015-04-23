@@ -10,6 +10,8 @@ package
 	import util.ApplicationUtility;
 	import ViewManager;
 	import views.AboutView;
+	import views.AlertView;
+	import views.ConfirmView;
 	import views.MainView;
 	import views.DebugView;
 	import views.ToolbarView;
@@ -42,6 +44,8 @@ package
 			ViewManager.registerView("Toolbar", ToolbarView);
 			ViewManager.registerView("Debug", DebugView);
 			ViewManager.registerView("About", AboutView);
+			ViewManager.registerView("Alert", AlertView);
+			ViewManager.registerView("Confirm", ConfirmView);
 			
 			// --------------------------- LOAD PROGRAM
 			var applicationMenuManager:ApplicationMenuManager = new ApplicationMenuManager();

@@ -61,7 +61,8 @@ package views
 			_projectModel = ModelManager.getModel(ProjectModel) as ProjectModel;
 			
 			_backgroundImageLoader = new Loader();
-			_backgroundImageLoader.addEventListener(IOErrorEvent.IO_ERROR, this.onErrorLoadingBackgroundImage);
+			_backgroundImageLoader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, this.onErrorLoadingBackgroundImage);
+			_backgroundImageLoader.contentLoaderInfo.addEventListener(IOErrorEvent.NETWORK_ERROR, this.onErrorLoadingBackgroundImage);
 			
 			this.addChild(_backgroundImageLoader);
 			
@@ -105,7 +106,8 @@ package views
 			this.removeChild(_connectionLayer);
 			this.removeChild(_backgroundImageLoader);
 			
-			_backgroundImageLoader.removeEventListener(IOErrorEvent.IO_ERROR, this.onErrorLoadingBackgroundImage);
+			_backgroundImageLoader.contentLoaderInfo.removeEventListener(IOErrorEvent.IO_ERROR, this.onErrorLoadingBackgroundImage);
+			_backgroundImageLoader.contentLoaderInfo.removeEventListener(IOErrorEvent.NETWORK_ERROR, this.onErrorLoadingBackgroundImage);
 			
 			this.removeEventListener(MouseEvent.MOUSE_DOWN, this.onMouseDown);
 			this.removeEventListener(MouseEvent.MOUSE_UP, this.onMouseUp);
@@ -308,7 +310,11 @@ package views
 		
 		private function onErrorLoadingBackgroundImage(e:IOErrorEvent):void
 		{
-			LogManager.logError(this, "Error loading background image! " + e.errorID);
+			LogManager.logError(this, "Error loading background image! " + e.text);
+			
+			ViewManager.addView("Alert");
+			var alert:AlertView = ViewManager.getViewById("Alert") as AlertView;
+			alert.setContent("Error!", "Error loading background image!");
 		}
 		
 		private function onDrawConnectToolLine(e:Event):void
