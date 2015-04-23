@@ -284,8 +284,7 @@ package models
 			if (xml.@version != ApplicationUtility.getVersion())
 			{
 				LogManager.logWarning(this, "Project was saved with a different version of Nodelayer!");
-				ViewManager.addView("Alert");
-				var alert:AlertView = ViewManager.getViewById("Alert") as AlertView;
+				var alert:AlertView = ViewManager.addView("Alert") as AlertView;
 				alert.setContent("Project version mismatch", "The project opened was created with a different version of Node Layer!");
 			}
 			

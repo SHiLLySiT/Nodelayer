@@ -52,12 +52,12 @@ package
 		 * @param	data
 		 * @param	depth
 		 */
-		public static function addView(id:String, depth:int = -1):void
+		public static function addView(id:String, depth:int = -1):View
 		{
 			if (_registeredViews[id] == null)
 			{
 				LogManager.logError(ViewManager, "No view named '" + id + "' registered!");
-				return;
+				return null;
 			}
 			
 			if (_currentScene == null) 
@@ -76,6 +76,8 @@ package
 				_currentScene.addChildAt(view, depth);
 			}
 			_activeViews.push(view);
+			
+			return view;
 		}
 		
 		/**

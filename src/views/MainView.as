@@ -320,12 +320,11 @@ package views
 			}
 		}
 		
-		private function onErrorLoadingBackgroundImage(e:IOErrorEvent):void
+		private function onErrorLoadingBackgroundImage(e:IOErrorEvent):void 
 		{
 			LogManager.logError(this, "Error loading background image! " + e.text);
 			
-			ViewManager.addView("Alert");
-			var alert:AlertView = ViewManager.getViewById("Alert") as AlertView;
+			var alert:AlertView = ViewManager.addView("Alert") as AlertView;
 			alert.setContent("Error!", "Error loading background image!");
 		}
 		

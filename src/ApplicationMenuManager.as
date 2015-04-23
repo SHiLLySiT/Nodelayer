@@ -102,10 +102,10 @@ package
 		
 		private function newProjectConfirm():void
 		{
+			_projectModel.removeAllNodes();
 			_projectModel.unsavedChanges = false;
 			_projectModel.projectDirectory = null;
 			_projectModel.backgroundImageFile = null;
-			_projectModel.removeAllNodes();
 		}
 		
 		private function saveProject(directory:File):void
@@ -263,8 +263,7 @@ package
 		{
 			if (this._projectModel.unsavedChanges)
 			{
-				ViewManager.addView("Confirm");
-				var confirm:ConfirmView = ViewManager.getViewById("Confirm") as ConfirmView;
+				var confirm:ConfirmView = ViewManager.addView("Confirm") as ConfirmView;
 				confirm.setContent("Unsaved changes", "All your changes will be lost. Are you sure you want to create a new project?", this.newProjectConfirm);
 			} else {
 				this.newProjectConfirm()
@@ -275,8 +274,7 @@ package
 		{
 			if (this._projectModel.unsavedChanges)
 			{
-				ViewManager.addView("Confirm");
-				var confirm:ConfirmView = ViewManager.getViewById("Confirm") as ConfirmView;
+				var confirm:ConfirmView = ViewManager.addView("Confirm") as ConfirmView;
 				confirm.setContent("Unsaved changes", "All your changes will be lost. Are you sure you want to open a project?", this.openProjectConfirm);
 			} else {
 				this.openProjectConfirm()
@@ -295,8 +293,7 @@ package
 			if (!projectFile.exists)
 			{
 				LogManager.logError(this, "No .nlp file find in folder selected!");
-				ViewManager.addView("Alert");
-				var alert:AlertView = ViewManager.getViewById("Alert") as AlertView;
+				var alert:AlertView = ViewManager.addView("Alert") as AlertView;
 				alert.setContent("No project file found", "There was no .nlp file found in the folder selected");
 				return;
 			}
