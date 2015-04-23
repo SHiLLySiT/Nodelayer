@@ -52,6 +52,18 @@ package models
 			}
 		}
 		
+		private var _unsavedChanges:Boolean;
+		public function get unsavedChanges():Boolean { return _unsavedChanges; }
+		public function set unsavedChanges(value:Boolean):void { _unsavedChanges = value; }
+		
+		private var _projectDirectory:File;
+		public function get projectDirectory():File { return _projectDirectory; }
+		public function set projectDirectory(value:File):void 
+		{ 
+			_projectDirectory = value; 
+			
+		}
+		
 		private var _documentWidth:int;
 		public function get documentWidth():int { return _documentWidth; }
 		//public function set documentWidth(value:int):void 
@@ -86,6 +98,8 @@ package models
 			_nodeStates = new Dictionary();
 			_nodeScale = 1.0;
 			_backgroundImageFile = null;
+			_projectDirectory = null;
+			_unsavedChanges = false;
 		}
 		
 		public function newProject():void

@@ -135,6 +135,8 @@ package views
 		
 		public function setBackgroundImage(file:File):void
 		{
+			this._projectModel.unsavedChanges = true;
+			
 			if (file == null)
 			{
 				_backgroundImageLoader.unload();
@@ -148,6 +150,8 @@ package views
 		
 		public function removeNode(id:int):void
 		{
+			this._projectModel.unsavedChanges = true;
+			
 			var node:Node = _nodes[id];
 			node.removeEventListener(MouseEvent.MOUSE_OVER, this.onNodeMouseOver);
 			node.removeEventListener(MouseEvent.MOUSE_OUT, this.onNodeMouseOut);
@@ -158,6 +162,8 @@ package views
 		
 		public function addNode(x:Number, y:Number, id:int):Node
 		{
+			this._projectModel.unsavedChanges = true;
+			
 			var node:Node = new Node();
 			node.id = id;
 			node.scaleX = _projectModel.nodeScale;
@@ -203,6 +209,8 @@ package views
 		
 		private function breakNodeConnections(node:int):void 
 		{
+			this._projectModel.unsavedChanges = true;
+			
 			var nodeState:NodeState = _projectModel.getNode(node);
 			for each (var c:int in nodeState.connectedNodes) {
 				var state:NodeState = _projectModel.getNode(c);
@@ -214,6 +222,8 @@ package views
 		
 		private function connectNodes(node1:int, node2:int):void
 		{
+			this._projectModel.unsavedChanges = true;
+			
 			var node1State:NodeState = _projectModel.getNode(node1);
 			var node2State:NodeState = _projectModel.getNode(node2);
 			if (!node1State.hasConnection(node2) && !node2State.hasConnection(node1)) 
@@ -246,6 +256,8 @@ package views
 		
 		private function dragSelectedNodes():void
 		{
+			this._projectModel.unsavedChanges = true;
+			
 			_selectedNodeOffsets = new Vector.<Point>();
 			for each (var n:Node in _selectedNodes)
 			{
