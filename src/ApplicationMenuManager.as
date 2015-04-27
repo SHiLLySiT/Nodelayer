@@ -14,6 +14,7 @@ package
 	import flash.ui.Keyboard;
 	import models.ProjectModel;
 	import flash.net.navigateToURL;
+	import types.ExportType;
 	import views.AlertView;
 	import views.ConfirmView;
 	
@@ -21,6 +22,10 @@ package
 	{
 		private var _projectModel:ProjectModel;
 		private var _isControlPressed:Boolean;
+		
+		private var _lastExport:File;
+		private var _lastExportType:String;
+		private var _isQuitting:Boolean;
 		
 		public function ApplicationMenuManager() 
 		{
@@ -31,6 +36,9 @@ package
 		{
 			this._projectModel = ModelManager.getModel(ProjectModel) as ProjectModel;
 			this._isControlPressed = false;
+			this._isQuitting = false;
+			
+			target.stage.nativeWindow.addEventListener(Event.CLOSING, this.onNativeQuit);
 			
 			target.stage.nativeWindow.menu = new NativeMenu(); 
 			
@@ -141,6 +149,48 @@ package
 			directory.addEventListener(Event.SELECT, this.onOpenProjectLocationSelected);
 		}
 		
+		private function exportProject(file:File, exportType:String):void 
+		{
+			var data:String = null;
+			switch (exportType)
+			{
+				case ExportType.XML:
+					data = _projectModel.exportXML();
+					if (file.extension != "xml") file.nativePath += ".xml";
+					break;
+					
+				case ExportType.JSON:
+					data = _projectModel.exportJSON();
+					if (file.extension != "json") file.nativePath += ".json";
+					break;
+			}
+			
+			var stream:FileStream = new FileStream();
+			stream.open(file, FileMode.WRITE);
+			stream.writeUTFBytes(data);
+			stream.close();	
+			
+			LogManager.logInfo(this, "Successfully exported project! (" + this._lastExportType + ")");
+		}
+		
+		private function quit():void
+		{
+			if (!this._isQuitting) {
+				if (_projectModel.unsavedChanges) {
+					this._isQuitting = true
+					var confirm:ConfirmView = ViewManager.addView("Confirm") as ConfirmView;
+					confirm.setContent("Unsaved changes", "All your changes will be lost. Are you sure you want to quit?", NativeApplication.nativeApplication.exit, this.quitDecline);
+				} else {
+					NativeApplication.nativeApplication.exit();
+				}
+			}
+		}
+		
+		private function quitDecline():void
+		{
+			this._isQuitting = false;
+		}
+		
 		private function onKeyDown(e:KeyboardEvent):void
 		{
 			switch (e.keyCode)
@@ -148,6 +198,16 @@ package
 				case Keyboard.S:
 					if (this._isControlPressed) {
 						this.onSaveProject(null);
+					}
+					break;
+					
+				case Keyboard.E:
+					if (this._isControlPressed && this._lastExport != null) {
+						this.exportProject(this._lastExport, this._lastExportType);
+					} else {
+						LogManager.logInfo(this, "You must export the project manually first!");
+						var alert:AlertView = ViewManager.addView("Alert") as AlertView;
+						alert.setContent("Unable to re-export", "You must export the project manually first!");
 					}
 					break;
 					
@@ -169,54 +229,28 @@ package
 		
 		private function onExportXML(e:Event):void
 		{
+			this._lastExportType = ExportType.XML;
 			var file:File = new File();
 			file.browseForSave("Export XML");
-			file.addEventListener(Event.SELECT, this.onXMLLocationSelected);
-		}
-		
-		private function onXMLLocationSelected(e:Event):void
-		{
-			var file:File = e.currentTarget as File;
-			file.removeEventListener(Event.SELECT, this.onXMLLocationSelected);
-			
-			var data:String = _projectModel.exportXML();
-			if (file.extension != "xml")
-			{
-				file.nativePath += ".xml";
-			}
-			
-			var stream:FileStream = new FileStream();
-			stream.open(file, FileMode.WRITE);
-			stream.writeUTFBytes(data);
-			stream.close();	
-			
-			LogManager.logInfo(this, "Successfully export XML: " + file.name);
+			file.addEventListener(Event.SELECT, this.onExportLocationSelected);
 		}
 		
 		private function onExportJSON(e:Event):void
 		{
+			this._lastExportType = ExportType.JSON;
 			var file:File = new File();
 			file.browseForSave("Export JSON");
-			file.addEventListener(Event.SELECT, this.onJSONLocationSelected);
+			file.addEventListener(Event.SELECT, this.onExportLocationSelected);
 		}
 		
-		private function onJSONLocationSelected(e:Event):void
+		private function onExportLocationSelected(e:Event):void
 		{
 			var file:File = e.currentTarget as File;
-			file.removeEventListener(Event.SELECT, this.onJSONLocationSelected);
+			file.removeEventListener(Event.SELECT, this.onExportLocationSelected);
 			
-			var data:String = _projectModel.exportJSON();
-			if (file.extension != "json")
-			{
-				file.nativePath += ".json";
-			}
+			this._lastExport = file;
 			
-			var stream:FileStream = new FileStream();
-			stream.open(file, FileMode.WRITE);
-			stream.writeUTFBytes(data);
-			stream.close();	
-			
-			LogManager.logInfo(this, "Successfully exported JSON: " + file.name);
+			this.exportProject(file, this._lastExportType);
 		}
 		
 		private function onNodeScaleChanged(e:Event):void
@@ -266,7 +300,7 @@ package
 				var confirm:ConfirmView = ViewManager.addView("Confirm") as ConfirmView;
 				confirm.setContent("Unsaved changes", "All your changes will be lost. Are you sure you want to create a new project?", this.newProjectConfirm);
 			} else {
-				this.newProjectConfirm()
+				this.newProjectConfirm();
 			}
 		}
 		
@@ -277,7 +311,7 @@ package
 				var confirm:ConfirmView = ViewManager.addView("Confirm") as ConfirmView;
 				confirm.setContent("Unsaved changes", "All your changes will be lost. Are you sure you want to open a project?", this.openProjectConfirm);
 			} else {
-				this.openProjectConfirm()
+				this.openProjectConfirm();
 			}
 		}
 		
@@ -334,10 +368,15 @@ package
 			this.saveProject(directory);
 		}
 		
+		private function onNativeQuit(e:Event):void
+		{
+			e.preventDefault();
+			this.quit();
+		}
+		
 		private function onQuit(e:Event):void
 		{
-			// TODO: prompt if not saved
-			NativeApplication.nativeApplication.exit();
+			this.quit();
 		}
 	}
 
