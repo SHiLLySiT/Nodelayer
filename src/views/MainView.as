@@ -233,7 +233,7 @@ package views
 			}
 		}
 		
-		private function createNode(connection:int = -1):int
+		private function createNode():int
 		{
 			var id:int = _projectModel.getNodeID();
 			
@@ -242,14 +242,6 @@ package views
 			nodeState.x = this.mouseX;
 			nodeState.y = this.mouseY;
 			_projectModel.addNode(nodeState);
-			
-			if (connection != -1) 
-			{
-				// make two-way connection
-				var otherNode:NodeState = _projectModel.getNode(connection);
-				otherNode.connectedNodes.push(nodeState.id);
-				nodeState.connectedNodes.push(otherNode.id);
-			}
 			
 			return id;
 		}
@@ -534,8 +526,12 @@ package views
 			switch(_projectModel.currentTool)
 			{
 				case ToolType.ADD:
-					var newNodeId:int = createNode((_overNode != null) ? _overNode.id : -1);
+					var newNodeId:int = this.createNode();
 					var newNode:Node = this.getNode(newNodeId);
+					if (this._overNode != null) 
+					{
+						this.connectNodes(newNodeId, this._overNode.id);
+					}
 					deselectAllNodes();
 					selectNode(newNode);
 					dragSelectedNodes();
@@ -570,10 +566,12 @@ package views
 			switch (_projectModel.currentTool)
 			{
 				case ToolType.ADD:
+					this._overNode = null;
 					_projectModel.removeNode(node.id);
 					break;
 					
 				case ToolType.MODIFY:
+					this._overNode = null;
 					_projectModel.removeNode(node.id);
 					break;
 					
