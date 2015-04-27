@@ -27,6 +27,11 @@ package
 		private var _lastExportType:String;
 		private var _isQuitting:Boolean;
 		
+		private var _node100:NativeMenuItem;
+		private var _node75:NativeMenuItem;
+		private var _node50:NativeMenuItem;
+		private var _node25:NativeMenuItem;
+		
 		public function ApplicationMenuManager() 
 		{
 			
@@ -80,17 +85,18 @@ package
 			var nodeSizeMenu:NativeMenuItem = editMenu.submenu.addItem(new NativeMenuItem("Node Scale")); 
 			nodeSizeMenu.submenu = new NativeMenu();
 			
-			var node100:NativeMenuItem = nodeSizeMenu.submenu.addItem(new NativeMenuItem("100%")); 
-			node100.addEventListener(Event.SELECT, this.onNodeScaleChanged);
+			this._node100 = nodeSizeMenu.submenu.addItem(new NativeMenuItem("100%")); 
+			this._node100.addEventListener(Event.SELECT, this.onNodeScaleChanged);
+			this._node100.checked = true;
 			
-			var node75:NativeMenuItem = nodeSizeMenu.submenu.addItem(new NativeMenuItem("75%")); 
-			node75.addEventListener(Event.SELECT, this.onNodeScaleChanged);
+			this._node75 = nodeSizeMenu.submenu.addItem(new NativeMenuItem("75%")); 
+			this._node75.addEventListener(Event.SELECT, this.onNodeScaleChanged);
 			
-			var node50:NativeMenuItem = nodeSizeMenu.submenu.addItem(new NativeMenuItem("50%")); 
-			node50.addEventListener(Event.SELECT, this.onNodeScaleChanged);
+			this._node50 = nodeSizeMenu.submenu.addItem(new NativeMenuItem("50%")); 
+			this._node50.addEventListener(Event.SELECT, this.onNodeScaleChanged);
 			
-			var node25:NativeMenuItem = nodeSizeMenu.submenu.addItem(new NativeMenuItem("25%")); 
-			node25.addEventListener(Event.SELECT, this.onNodeScaleChanged);
+			this._node25 = nodeSizeMenu.submenu.addItem(new NativeMenuItem("25%")); 
+			this._node25.addEventListener(Event.SELECT, this.onNodeScaleChanged);
 			// ----
 			
 			// ----------------------------------------- HELP
@@ -114,6 +120,7 @@ package
 			_projectModel.projectDirectory = null;
 			_projectModel.backgroundImageFile = null;
 			_projectModel.unsavedChanges = false;
+			_projectModel.nodeScale = 1.0;
 		}
 		
 		private function saveProject(directory:File):void
@@ -255,12 +262,17 @@ package
 		
 		private function onNodeScaleChanged(e:Event):void
 		{
+			this._node100.checked = false;
+			this._node75.checked = false;
+			this._node50.checked = false;
+			this._node25.checked = false;
+			
 			var menuItem:NativeMenuItem = e.currentTarget as NativeMenuItem;
 			switch (menuItem.label) {
-				case "100%": _projectModel.nodeScale = 1.0; break;
-				case "75%": _projectModel.nodeScale = 0.75; break;
-				case "50%": _projectModel.nodeScale = 0.50; break;
-				case "25%": _projectModel.nodeScale = 0.25; break;
+				case "100%": _projectModel.nodeScale = 1.0; this._node100.checked = true; break;
+				case "75%": _projectModel.nodeScale = 0.75; this._node75.checked = true; break;
+				case "50%": _projectModel.nodeScale = 0.50; this._node50.checked = true; break;
+				case "25%": _projectModel.nodeScale = 0.25; this._node25.checked = true; break;
 			}
 		}
 		
