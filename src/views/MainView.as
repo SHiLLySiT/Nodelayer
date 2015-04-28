@@ -82,10 +82,10 @@ package views
 			
 			this.addEventListener(MouseEvent.MOUSE_DOWN, this.onMouseDown);
 			this.addEventListener(MouseEvent.MOUSE_UP, this.onMouseUp);
-			this.addEventListener(MouseEvent.MOUSE_WHEEL, this.onMouseWheel);
-			this.addEventListener(MouseEvent.MIDDLE_MOUSE_DOWN, this.onMiddleMouseDown);
-			this.addEventListener(MouseEvent.MIDDLE_MOUSE_UP, this.onMiddleMouseUp);
 			
+			this.stage.addEventListener(MouseEvent.MOUSE_WHEEL, this.onMouseWheel);
+			this.stage.addEventListener(MouseEvent.MIDDLE_MOUSE_DOWN, this.onMiddleMouseDown);
+			this.stage.addEventListener(MouseEvent.MIDDLE_MOUSE_UP, this.onMiddleMouseUp);
 			this.stage.addEventListener(KeyboardEvent.KEY_DOWN, this.onKeyDown);
 			this.stage.addEventListener(KeyboardEvent.KEY_UP, this.onKeyUp);
 			
@@ -109,10 +109,9 @@ package views
 			_backgroundImageLoader.contentLoaderInfo.removeEventListener(IOErrorEvent.IO_ERROR, this.onErrorLoadingBackgroundImage);
 			_backgroundImageLoader.contentLoaderInfo.removeEventListener(IOErrorEvent.NETWORK_ERROR, this.onErrorLoadingBackgroundImage);
 			
-			this.removeEventListener(MouseEvent.MOUSE_DOWN, this.onMouseDown);
-			this.removeEventListener(MouseEvent.MOUSE_UP, this.onMouseUp);
-			this.removeEventListener(MouseEvent.MOUSE_WHEEL, this.onMouseWheel);
-			
+			this.stage.removeEventListener(MouseEvent.MOUSE_DOWN, this.onMouseDown);
+			this.stage.removeEventListener(MouseEvent.MOUSE_UP, this.onMouseUp);
+			this.stage.removeEventListener(MouseEvent.MOUSE_WHEEL, this.onMouseWheel);
 			this.stage.removeEventListener(KeyboardEvent.KEY_DOWN, this.onKeyDown);
 			this.stage.removeEventListener(KeyboardEvent.KEY_UP, this.onKeyUp);
 			
