@@ -95,7 +95,7 @@ package models
 			_documentWidth = 800;
 			_documentHeight = 600;
 			_currentTool = ToolType.ADD;
-			_lastNodeID = -1;
+			_lastNodeID = 0;
 			_nodeStates = new Dictionary();
 			_nodeScale = 1.0;
 			_backgroundImageFile = null;
@@ -106,11 +106,18 @@ package models
 		public function newProject():void
 		{
 			removeAllNodes();
+			_lastNodeID = 0;
 		}
 		
 		public function getNodeID():int
 		{
-			_lastNodeID++;
+			// when projects are loaded, we don't know the id's of nodes
+			// so we need to ensure they dont already exist
+			// FUTURE: when saving, loop through nodes and re-number them
+			while (_nodeStates[_lastNodeID] != null)
+			{
+				_lastNodeID++;
+			}
 			return _lastNodeID;
 		}
 		
