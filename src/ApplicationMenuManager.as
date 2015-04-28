@@ -22,6 +22,7 @@ package
 	{
 		private var _projectModel:ProjectModel;
 		private var _isControlPressed:Boolean;
+		private var _target:DisplayObjectContainer;
 		
 		private var _lastExport:File;
 		private var _lastExportType:String;
@@ -39,6 +40,7 @@ package
 		
 		public function initialize(target:DisplayObjectContainer):void
 		{
+			this._target = target;
 			this._projectModel = ModelManager.getModel(ProjectModel) as ProjectModel;
 			this._isControlPressed = false;
 			this._isQuitting = false;
@@ -311,7 +313,9 @@ package
 			{
 				var confirm:ConfirmView = ViewManager.addView("Confirm") as ConfirmView;
 				confirm.setContent("Unsaved changes", "All your changes will be lost. Are you sure you want to create a new project?", this.newProjectConfirm);
-			} else {
+			} 
+			else 
+			{
 				this.newProjectConfirm();
 			}
 		}
@@ -322,7 +326,9 @@ package
 			{
 				var confirm:ConfirmView = ViewManager.addView("Confirm") as ConfirmView;
 				confirm.setContent("Unsaved changes", "All your changes will be lost. Are you sure you want to open a project?", this.openProjectConfirm);
-			} else {
+			} 
+			else 
+			{
 				this.openProjectConfirm();
 			}
 		}

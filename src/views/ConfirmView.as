@@ -27,8 +27,9 @@ package views
 		{
 			super.initialize();
 			
-			this.x = this.stage.width * 0.5 - this.width * 0.5;
-			this.y = this.stage.height * 0.5 - this.height * 0.5;
+			var mainView:MainView = ViewManager.getViewById("Main") as MainView;
+			this.x = (this.stage.nativeWindow.width * 0.5) - (this.width * 0.5);
+			this.y = (this.stage.nativeWindow.height * 0.5) - (this.height * 0.5);
 			
 			_mouseBlock = new Shape();
 			this.updateMouseBlock();
@@ -45,8 +46,11 @@ package views
 			this.okButton.removeEventListener(MouseEvent.CLICK, this.onAcceptButtonClick);
 			this.cancelButton.removeEventListener(MouseEvent.CLICK, this.onDeclineButtonClick);
 			//this.stage.removeEventListener(Event.RESIZE, this.onStageResized);
+			this.removeChild(_mouseBlock);
 			
 			super.deinitialize();
+			
+			this.stage.focus = this.stage;
 		}
 		
 		public function setContent(title:String, content:String, onAccept:Function = null, onDecline:Function = null):void
@@ -72,13 +76,12 @@ package views
 		private function updateMouseBlock():void
 		{
 			// TODO: resize blocking volume based on window dimensions
-			var width:Number = this.stage.width; //this.stage.nativeWindow.width;
-			var height:Number = this.stage.height; //this.stage.nativeWindow.height;
+			var width:Number = this.stage.nativeWindow.width;
+			var height:Number = this.stage.nativeWindow.height;
 			var graphics:Graphics = _mouseBlock.graphics;
 			graphics.clear();
 			graphics.beginFill(0x000000);
-			graphics.drawRect(this.stage.x - width * 0.5 + this.width * 0.5, 
-			this.stage.y - height * 0.5 + this.height * 0.5, width, height);
+			graphics.drawRect(-(width * 0.5) + (this.width * 0.5), -(height * 0.5) + (this.height * 0.5), width, height);
 			graphics.endFill();
 			_mouseBlock.alpha = 0.5;
 		}

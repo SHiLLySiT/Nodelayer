@@ -190,6 +190,11 @@ package views
 			_connectToolLineNode.addEventListener(Event.ENTER_FRAME, onDrawConnectToolLine);
 		}
 		
+		private function isPopupVisible():Boolean
+		{
+			return (ViewManager.getViewById("Alert") == null && ViewManager.getViewById("Confirm") == null);
+		}
+		
 		private function setDocumentScale(newScale:Number):void
 		{
 			if (newScale < 0.1) 
@@ -400,15 +405,15 @@ package views
 			switch (e.keyCode)
 			{
 				case Keyboard.NUMBER_1:
-					if (_isControlPressed) setDocumentScale(1.0);
+					if (_isControlPressed && this.isPopupVisible()) setDocumentScale(1.0);
 					break;
 					
 				case Keyboard.EQUAL:
-					if (_isControlPressed) setDocumentScale(this.scaleX + 0.2);
+					if (_isControlPressed && this.isPopupVisible()) setDocumentScale(this.scaleX + 0.2);
 					break;
 					
 				case Keyboard.MINUS:
-					if (_isControlPressed) setDocumentScale(this.scaleX - 0.2);
+					if (_isControlPressed && this.isPopupVisible()) setDocumentScale(this.scaleX - 0.2);
 					break;
 					
 				case Keyboard.BACKQUOTE:
@@ -485,10 +490,13 @@ package views
 		
 		private function onMiddleMouseDown(e:MouseEvent):void
 		{
-			_dragOffset.x = this.x - this.stage.mouseX;
-			_dragOffset.y = this.y - this.stage.mouseY;
-			
-			this.addEventListener(Event.ENTER_FRAME, onDragView);
+			if (this.isPopupVisible())
+			{
+				_dragOffset.x = this.x - this.stage.mouseX;
+				_dragOffset.y = this.y - this.stage.mouseY;
+				
+				this.addEventListener(Event.ENTER_FRAME, onDragView);
+			}
 		}
 		
 		private function onMiddleMouseUp(e:MouseEvent):void
@@ -499,7 +507,10 @@ package views
 		private function onMouseWheel(e:MouseEvent):void
 		{
 			if (_isControlPressed) {
-				setDocumentScale(this.scaleX + e.delta * 0.01);
+				if (this.isPopupVisible())
+				{
+					setDocumentScale(this.scaleX + e.delta * 0.01);
+				}
 			}
 		}
 		
