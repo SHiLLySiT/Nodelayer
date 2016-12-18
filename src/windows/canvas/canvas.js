@@ -1,14 +1,11 @@
 'use strict';
 
-let paper = require('paper');
+const ipc = require('electron').ipcRenderer;
+const paper = require('paper');
+const canvas = document.getElementById('canvas');
 
-init();
-
-function init() {
-    let canvas = document.getElementById('canvas');
-    paper.setup(canvas);
-    paper.view.onClick = onViewClick;
-}
+paper.setup(canvas);
+paper.view.onClick = onViewClick;
 
 function onNodeClick(e) {
     e.stopPropagation();
