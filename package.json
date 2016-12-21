@@ -14,6 +14,8 @@
     "electron": "^1.4.1"
   },
   "dependencies": {
-    "jQuery": "^1.7.4"
+    "glob": "^7.1.1",
+    "jQuery": "^1.7.4",
+    "apper": "^0.10.2"
   }
 }

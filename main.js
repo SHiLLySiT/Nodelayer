@@ -4,48 +4,59 @@ const electron = require('electron');
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 const path = require('path');
+const glob = require('glob');
 const url = require('url');
-const ipc = require('electron').ipcMain;
-
-let mainWindow;
 
 function init () {
-    createCanvas();
-    createToolbar();
+    // include all files in main-process dir
+    var files = glob.sync(path.join(__dirname, 'src/main-process/**/*.js'));
+    files.forEach(function (file) {
+        require(file);
+    });
+
+    // create windows
+    global.window = {};
+    createWindow(
+        'canvas',
+        'src/windows/canvas/canvas.html',
+        {
+            width:800, height:600
+        },
+        null,
+        true
+    );
+
+    createWindow(
+        'tools',
+        'src/windows/toolbar/toolbar.html',
+        {
+            parent: global.window.canvas,
+            width: 200,
+            height: 75,
+            resizable: false,
+            minimizable: false,
+            maximizable: false,
+        },
+        null,
+        false
+    );
 }
 
-function createCanvas() {
-    var mainWindow = new BrowserWindow({
-        width: 800,
-        height: 600,
-    });
-    mainWindow.loadURL(url.format({
-      pathname: path.join(__dirname, 'src/windows/canvas/canvas.html'),
+function createWindow (id, pathStr, options, menu, showDevTools) {
+    var window = new BrowserWindow(options);
+    window.loadURL(url.format({
+      pathname: path.join(__dirname, pathStr),
       protocol: 'file:',
       slashes: true
     }))
-    mainWindow.webContents.openDevTools();
-    mainWindow.on('closed', function () {
-      mainWindow = null;
+    window.on('closed', function () {
+      global.window[id] = null;
     })
-}
-
-function createToolbar() {
-    var toolBar = new BrowserWindow({
-        parent: mainWindow,
-        width: 200,
-        height: 75,
-        resizable: false,
-        minimizable: false,
-        maximizable: false,
-    });
-    toolBar.loadURL(url.format({
-      pathname: path.join(__dirname, 'src/windows/toolbar/toolbar.html'),
-      protocol: 'file:',
-      slashes: true
-    }))
-    toolBar.setMenu(null);
-    toolBar.isResizable(false);
+    window.setMenu(menu);
+    if (showDevTools) {
+        window.openDevTools();
+    }
+    global.window[id] = window;
 }
 
 app.on('ready', init);

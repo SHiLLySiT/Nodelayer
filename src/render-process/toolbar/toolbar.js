@@ -8,6 +8,7 @@ $('#createBtn').click(function () {
         $(this).removeClass('active');
     });
     $('#createBtn').addClass('active');
+    ipc.send('tool-changed', 'create');
 })
 
 $('#connectBtn').click(function () {
@@ -15,4 +16,5 @@ $('#connectBtn').click(function () {
         $(this).removeClass('active');
     });
     $('#connectBtn').addClass('active');
+    ipc.send('tool-changed', 'connect');
 })
