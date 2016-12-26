@@ -16,6 +16,6 @@
   "dependencies": {
     "glob": "^7.1.1",
     "jQuery": "^1.7.4",
-    "apper": "^0.10.2"
+    "paper": "^0.10.2"
   }
 }
