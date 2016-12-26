@@ -15,7 +15,7 @@ TODO
 
 ### Building
 
-Install ![electron-packager](https://github.com/electron-userland/electron-packager) globally.
+Install [electron-packager](https://github.com/electron-userland/electron-packager) globally.
 
 Run in the root directory:
 ```sh
@@ -36,4 +36,4 @@ If you'd like to contribute, please fork the repository and use a feature/fix
 branch. Pull requests are warmly welcome.
 
 ## Licensing
-The code in this project is licensed under ![MIT license](https://github.com/SHiLLySiT/Nodelayer/blob/master/LICENSE.md).
+The code in this project is licensed under [MIT license](https://github.com/SHiLLySiT/Nodelayer/blob/master/LICENSE.md).
