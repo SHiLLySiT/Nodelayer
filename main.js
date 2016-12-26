@@ -31,9 +31,27 @@ function init () {
         'src/windows/toolbar/toolbar.html',
         {
             parent: global.window.canvas,
+            x: global.window.canvas.getPosition()[0],
+            y: global.window.canvas.getPosition()[1] + 50,
             width: 200,
             height: 75,
             resizable: false,
+            minimizable: false,
+            maximizable: false,
+        },
+        null,
+        false
+    );
+
+    createWindow(
+        'inspector',
+        'src/windows/inspector/inspector.html',
+        {
+            parent: global.window.canvas,
+            x: global.window.canvas.getPosition()[0],
+            y: global.window.canvas.getPosition()[1] + 150,
+            width: 200,
+            height: 200,
             minimizable: false,
             maximizable: false,
         },
