@@ -15,7 +15,13 @@ TODO
 
 ### Building
 
-TODO
+Install ![electron-packager](https://github.com/electron-userland/electron-packager) globally.
+
+Run in the root directory:
+```sh
+# where PLATFORM is the platform you wish to build for
+electron-packager . Nodelayer --platform=PLATFORM
+```
 
 ## Planned Features
 
@@ -26,7 +32,7 @@ TODO
 
 ## Contributing
 
-If you'd like to contribute, please fork the repository and use a feature
+If you'd like to contribute, please fork the repository and use a feature/fix
 branch. Pull requests are warmly welcome.
 
 ## Licensing
