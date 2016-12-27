@@ -61,6 +61,24 @@ function init () {
         null,
         true
     );
+
+    createWindow(
+        'templateEditor',
+        'src/windows/template-editor/template-editor.html',
+        {
+            parent: global.window.canvas,
+            x: global.window.canvas.getPosition()[0] + 300,
+            y: global.window.canvas.getPosition()[1] + 50,
+            minWidth: 300,
+            minHeight: 200,
+            width: 300,
+            height: 500,
+            minimizable: false,
+            maximizable: false,
+        },
+        null,
+        true
+    );
 }
 
 function createWindow (id, pathStr, options, menu, showDevTools) {
