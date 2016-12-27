@@ -87,11 +87,8 @@ tools.create = {
         node.fillColor = 'red';
         node.data = {
             connections: [],
+            type: null,
             properties: [
-                { label: "Name12", type:"string", value: "NODE1" },
-                { label: "Info534", type:"string", value: "IMMA NODE" },
-                { label: "Integer345", type:"integer", value: "9000" },
-                { label: "Boolean34", type:"boolean", value: false },
             ],
         }
         paper.view.update();

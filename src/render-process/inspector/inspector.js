@@ -3,45 +3,42 @@
 const ipc = require('electron').ipcRenderer;
 const $ = require('jQuery');
 
+let selectedContainer = $('#selection-container');
+let noSelectionContainer = $('#no-selection-container');
 let propContainer = $('#property-container');
-let emptyMessage = $('#no-selection-message');
 let loadedProperties = null;
 
-// let prop = $('#template-string div:first-child');
-// properties.append(prop);
+noSelectionContainer.show();
+selectedContainer.hide();
 
 function load(properties) {
     loadedProperties = properties;
     propContainer.empty();
     if (loadedProperties.length == 0) {
-        emptyMessage.show();
-        return;
-    }
+        for (let i = 0; i < loadedProperties.length; i++) {
+            let prop = loadedProperties[i];
 
-    emptyMessage.hide();
-    for (let i = 0; i < loadedProperties.length; i++) {
-        let prop = loadedProperties[i];
+            let template = $('#template-' + prop.type).clone();
+            template.show();
 
-        let template = $('#template-' + prop.type).clone();
-        template.show();
+            template.find('#label').text(prop.label + ':');
+            template.find('input').attr('index', i);
 
-        template.find('#label').text(prop.label + ':');
-        template.find('input').attr('index', i);
+            if (prop.type == 'string') {
+                template.find('#value').val(prop.value);
+                template.find('input').change(onStringPropertyChanged);
+            } else if (prop.type == 'integer') {
+                template.find('#value').val(prop.value);
+                template.find('input').change(onIntegerPropertyChanged);
+                template.find('#increase').click(onIntegerIncrease);
+                template.find('#decrease').click(onIntegerDecrease);
+            } else if (prop.type == 'boolean') {
+                template.find('#value').attr('checked', prop.value);
+                template.find('input').change(onBooleanPropertyChanged);
+            }
 
-        if (prop.type == 'string') {
-            template.find('#value').val(prop.value);
-            template.find('input').change(onStringPropertyChanged);
-        } else if (prop.type == 'integer') {
-            template.find('#value').val(prop.value);
-            template.find('input').change(onIntegerPropertyChanged);
-            template.find('#increase').click(onIntegerIncrease);
-            template.find('#decrease').click(onIntegerDecrease);
-        } else if (prop.type == 'boolean') {
-            template.find('#value').attr('checked', prop.value);
-            template.find('input').change(onBooleanPropertyChanged);
+            propContainer.append(template);
         }
-
-        propContainer.append(template);
     }
 }
 
@@ -96,5 +93,12 @@ function onStringPropertyChanged(e) {
 }
 
 ipc.on('selection-changed', function(event, properties) {
-    load(properties);
+    if (properties == null) {
+        noSelectionContainer.show();
+        selectedContainer.hide();
+    } else {
+        noSelectionContainer.hide();
+        selectedContainer.show();
+        load(properties);
+    }
 });

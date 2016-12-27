@@ -8,11 +8,23 @@
   </head>
   <body>
       <div class="container">
-          <div id="no-selection-message" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);">
+          <div id="no-selection-container" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);">
               <div style="color:gray;"><i>Nothing is selected</i></div>
           </div>
 
-          <div id="property-container">
+          <div id="selection-container">
+              <div id="template-selection" class="row">
+                  <div class="col-xs-12">
+                      <select class="form-control" id="value">
+                        <option></option>
+                      </select>
+                  </div>
+              </div>
+
+              <hr>
+
+              <div id="property-container">
+              </div>
           </div>
       </div>
 
