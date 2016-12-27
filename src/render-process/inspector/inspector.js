@@ -37,8 +37,7 @@ function load(properties) {
             template.find('#increase').click(onIntegerIncrease);
             template.find('#decrease').click(onIntegerDecrease);
         } else if (prop.type == 'boolean') {
-            // FIXME: if value is false, still getting flagged as true?
-            template.find('#value').attr('checked', (prop.value) ? "checked" : "");
+            template.find('#value').attr('checked', prop.value);
             template.find('input').change(onBooleanPropertyChanged);
         }
 
@@ -47,7 +46,9 @@ function load(properties) {
 }
 
 function onBooleanPropertyChanged(e) {
-    console.log(e);
+    let index = $(this).attr('index');
+    let value = $(this).is(":checked");
+    ipc.send('property-changed', index, value);
 }
 
 function isInteger(str) {
@@ -55,8 +56,8 @@ function isInteger(str) {
 }
 
 function onIntegerPropertyChanged(e) {
-    let index = $(e.currentTarget).attr('index');
-    let value = $(e.currentTarget).val();
+    let index = $(this).attr('index');
+    let value = $(this).val();
 
     if (!isInteger(value)) {
         $(e.currentTarget).val(0);
@@ -67,7 +68,7 @@ function onIntegerPropertyChanged(e) {
 }
 
 function onIntegerIncrease(e) {
-    let input = $(e.currentTarget).closest('.row').find('input');
+    let input = $(this).closest('.row').find('input');
     let index = input.attr('index');
     let value = parseInt(input.val());
     if (value < Number.MAX_SAFE_INTEGER) {
@@ -78,7 +79,7 @@ function onIntegerIncrease(e) {
 }
 
 function onIntegerDecrease(e) {
-    let input = $(e.currentTarget).closest('.row').find('input');
+    let input = $(this).closest('.row').find('input');
     let index = input.attr('index');
     let value = parseInt(input.val());
     if (value > Number.MIN_SAFE_INTEGER) {
@@ -89,8 +90,8 @@ function onIntegerDecrease(e) {
 }
 
 function onStringPropertyChanged(e) {
-    let index = $(e.currentTarget).attr('index');
-    let value = $(e.currentTarget).val();
+    let index = $(this).attr('index');
+    let value = $(this).val();
     ipc.send('property-changed', index, value);
 }
 
