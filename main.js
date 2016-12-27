@@ -20,7 +20,8 @@ function init () {
         'canvas',
         'src/windows/canvas/canvas.html',
         {
-            width:800, height:600
+            width:800,
+            height:600,
         },
         null,
         true
@@ -50,13 +51,15 @@ function init () {
             parent: global.window.canvas,
             x: global.window.canvas.getPosition()[0],
             y: global.window.canvas.getPosition()[1] + 150,
-            width: 200,
-            height: 200,
+            minWidth: 300,
+            minHeight: 200,
+            width: 300,
+            height: 500,
             minimizable: false,
             maximizable: false,
         },
         null,
-        false
+        true
     );
 }
 

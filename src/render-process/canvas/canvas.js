@@ -42,7 +42,9 @@ let tools = {};
 tools.create = {
     onNodeClick: function (e) {
         e.stopPropagation();
-        if (e.event.button == 2) {
+        if (e.event.button == 0) {
+            ipc.send('selection-changed', null);
+        } else if (e.event.button == 2) {
             let node = e.target;
             for (let i = 0; i < node.data.connections.length; i++) {
                 let c = node.data.connections[i];

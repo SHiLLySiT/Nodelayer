@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <meta charset="UTF-8">
+      <title>Inspector</title>
+      <link href="../../css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
+      <link href="../../css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+  </head>
+  <body>
+      <div class="container">
+          <div id="no-selection-message" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);">
+              <div style="color:gray;"><i>Nothing is selected</i></div>
+          </div>
+
+          <div id="property-container">
+          </div>
+      </div>
+
+      <!-- property templates  -->
+      <div id="template-string" class="hidden">
+          <div class="row">
+              <div class="col-xs-12">
+                  <label for="string">String:</label>
+                  <input class="form-control" id="string" type="text">
+              </div>
+          </div>
+      </div>
+
+      <div id="template-float" class="hidden">
+          <div class="row">
+              <div class="col-xs-12">
+                  <label for="float">Float:</label>
+                  <input class="form-control" id="float" type="text">
+              </div>
+          </div>
+      </div>
+
+      <div id="template-integer" class="hidden">
+          <div class="row">
+              <div class="col-xs-12">
+                  <label for="integer">Integer:</label>
+                  <div class="input-group">
+                      <input id="integer" type="text" class="form-control">
+                      <div class="input-group-btn">
+                          <button class="btn btn-default" type="submit">
+                              <i class="fa fa-caret-up" aria-hidden="true"></i>
+                          </button>
+                          <button class="btn btn-default" type="submit">
+                              <i class="fa fa-caret-down" aria-hidden="true"></i>
+                          </button>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+
+      <div id="template-boolean" class="hidden">
+          <div class="row">
+              <div class="col-xs-12">
+                  <label for="boolean">Boolean:</label>
+                  <br>
+                  <input id="boolean" type="checkbox" value="">
+              </div>
+          </div>
+      </div>
+
+      <div id="template-enum" class="hidden">
+          <div class="row">
+              <div class="col-xs-12">
+                  <label for="enum">Enum:</label>
+                  <select class="form-control" id="enum">
+                    <option>Cat</option>
+                    <option>Dog</option>
+                    <option>Bird</option>
+                  </select>
+              </div>
+          </div>
+      </div>
+  </body>
+  <script src="../../render-process/inspector/inspector.js"></script>
+</html>
