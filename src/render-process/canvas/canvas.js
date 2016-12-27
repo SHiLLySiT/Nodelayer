@@ -10,6 +10,7 @@ paper.view.onMouseUp = onCanvasUp;
 
 let layerConnection = paper.project.activeLayer;
 let layerNode = new paper.Layer();
+let selectedNode = null;
 
 // ----------------------------------------------------------------------- UTIL
 function areNodesConnected(a, b) {
@@ -42,10 +43,11 @@ let tools = {};
 tools.create = {
     onNodeClick: function (e) {
         e.stopPropagation();
+        let node = e.target;
         if (e.event.button == 0) {
-            ipc.send('selection-changed', null);
+            selectedNode = node;
+            ipc.send('selection-changed', node.data.properties);
         } else if (e.event.button == 2) {
-            let node = e.target;
             for (let i = 0; i < node.data.connections.length; i++) {
                 let c = node.data.connections[i];
                 let other = (c.data.start == node) ? c.data.end : c.data.start;
@@ -84,7 +86,13 @@ tools.create = {
         node.onMouseDrag = onNodeDrag;
         node.fillColor = 'red';
         node.data = {
-            connections:[],
+            connections: [],
+            properties: [
+                { label: "Name12", type:"string", value: "NODE1" },
+                { label: "Info534", type:"string", value: "IMMA NODE" },
+                { label: "Integer345", type:"integer", value: "9000" },
+                { label: "Boolean34", type:"boolean", value: false },
+            ],
         }
         paper.view.update();
     },
@@ -175,6 +183,12 @@ function onCanvasDown(e) {
 
 ipc.on('tool-changed', function(event, tool) {
     tools.current = tools[tool];
+});
+
+ipc.on('property-changed', function(event, index, value) {
+    if (selectedNode != null) {
+        selectedNode.data.properties[index].value = value;
+    }
 });
 
 window.addEventListener('resize', function() {
