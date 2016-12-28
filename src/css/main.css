@@ -3,3 +3,29 @@
     justify-content: center;
     align-items: center;
 }
+
+.btn-borderless {
+    border-width:0px;
+}
+
+.debug1 {
+    border-style:solid;
+    border-width:1px;
+    border-color:red;
+}
+
+.debug2 {
+    border-style:solid;
+    border-width:1px;
+    border-color:blue;
+}
+
+.debug3 {
+    border-style:solid;
+    border-width:1px;
+    border-color:green;
+}
+
+.hide {
+    display:none;
+}

@@ -9,45 +9,141 @@
   </head>
   <body>
       <div class="container">
+          <!-- template list -->
           <div id="template-list">
-              <div class="panel panel-default" style="margin:5px;">
-                  <div class="panel-heading">
-                      <div class="row center-vertical">
-                          <div class="col-xs-8">
-                              <div>Test property</div>
-                              <div style="color:gray;">(string)</div>
+              <div id="list">
+                  <div class="panel panel-default" style="margin:5px;">
+                      <div class="panel-heading">
+                          <div class="row center-vertical">
+                              <div class="col-xs-8">
+                                  <div>Example Template</div>
+                              </div>
+                              <div class="col-xs-4">
+                                  <button class="btn btn-default btn-sm btn-borderless" type="submit">
+                                      <i class="fa fa-pencil" aria-hidden="true"></i>
+                                  </button>
+                              </div>
                           </div>
-                          <div class="col-xs-4">
-                              <button class="btn btn-default btn-sm" type="submit">
-                                  <i class="fa fa-pencil" aria-hidden="true"></i>
-                              </button>
+                      </div>
+                  </div>
+
+                  <div class="panel panel-default" style="margin:5px;">
+                      <div class="panel-heading">
+                          <div class="row center-vertical">
+                              <div class="col-xs-8">
+                                  <div>A Really Long Template</div>
+                              </div>
+                              <div class="col-xs-4">
+                                  <button class="btn btn-default btn-sm btn-borderless" type="submit">
+                                      <i class="fa fa-pencil" aria-hidden="true"></i>
+                                  </button>
+                              </div>
+                        </div>
+                      </div>
+                  </div>
+              </div>
+              <hr>
+              <div class="row">
+                  <div class="text-center col-xs-12">
+                      <button type="button" id="newTemplate" class="btn btn-default">
+                          NEW TEMPLATE
+                      </button>
+                  </div>
+              </div>
+          </div>
+
+          <!-- template edit -->
+          <div id="template-edit" class="hide">
+              <div class="row">
+                  <div class="col-xs-2 center-vertical" style="height:30px;">
+                      <button class="btn btn-default btn-sm btn-borderless" type="submit">
+                          <i class="fa fa-arrow-left" aria-hidden="true"></i>
+                      </button>
+                  </div>
+                  <div class="col-xs-8 center-vertical" style="height:30px;">
+                      <div class="text-center" style="color:gray;">Edit Example Template</div>
+                  </div>
+                  <div class="col-xs-2 center-vertical" style="height:30px;">
+                      <!-- keeps text centered -->
+                  </div>
+              </div>
+              <hr style="margin:10px;">
+              <div id="list">
+                  <div class="panel panel-default" style="margin:5px;">
+                      <div class="panel-heading">
+                          <div class="row center-vertical">
+                              <div class="col-xs-8">
+                                  <div>Property1</div>
+                                  <div style="color:gray;">(string)</div>
+                              </div>
+                              <div class="col-xs-4">
+                                  <button class="btn btn-default btn-sm btn-borderless" type="submit">
+                                      <i class="fa fa-pencil" aria-hidden="true"></i>
+                                  </button>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+                  <div class="panel panel-default" style="margin:5px;">
+                      <div class="panel-heading">
+                          <div class="row center-vertical">
+                              <div class="col-xs-8">
+                                  <div>Property1</div>
+                                  <div style="color:gray;">(string)</div>
+                              </div>
+                              <div class="col-xs-4">
+                                  <button class="btn btn-default btn-sm btn-borderless" type="submit">
+                                      <i class="fa fa-pencil" aria-hidden="true"></i>
+                                  </button>
+                              </div>
                           </div>
                       </div>
                   </div>
               </div>
+          </div>
 
-              <div class="panel panel-default" style="margin:5px;">
-                  <div class="panel-heading">
-                      <div class="row center-vertical">
-                          <div class="col-xs-8">
-                              <div>Test property2</div>
-                              <div style="color:gray;">(integer)</div>
-                          </div>
-                          <div class="col-xs-4">
-                              <button class="btn btn-default btn-sm" type="submit">
-                                  <i class="fa fa-pencil" aria-hidden="true"></i>
-                              </button>
-                          </div>
-                    </div>
+          <!-- property edit -->
+          <div id="template-edit" class="hide">
+              <div class="row">
+                  <div class="col-xs-2 center-vertical" style="height:30px;">
+                      <button class="btn btn-default btn-sm btn-borderless" type="submit">
+                          <i class="fa fa-arrow-left" aria-hidden="true"></i>
+                      </button>
+                  </div>
+                  <div class="col-xs-8 center-vertical" style="height:30px;">
+                      <div class="text-center" style="color:gray;">Edit Example Property</div>
+                  </div>
+                  <div class="col-xs-2 center-vertical" style="height:30px;">
+                      <!-- keeps text centered -->
                   </div>
               </div>
-          </div>
-          <hr>
-          <div class="row">
-              <div class="text-center col-xs-12">
-                  <button type="button" id="newTemplate" class="btn btn-default">
-                      NEW TEMPLATE
-                  </button>
+              <hr style="margin:10px;">
+              <div id="settings">
+                  <!-- Label -->
+                  <div class="row">
+                      <div class="col-xs-12">
+                          <label for="label">Label:</label>
+                          <input class="form-control" id="label" type="text">
+                      </div>
+                  </div>
+                  <!-- Type -->
+                  <div class="row">
+                      <div class="col-xs-12">
+                          <label for="type">Type:</label>
+                          <select class="form-control" id="type">
+                            <option>string</option>
+                            <option>integer</option>
+                            <option>boolean</option>
+                          </select>
+                      </div>
+                  </div>
+                  <!-- Default Value -->
+                  <div class="row">
+                      <div class="col-xs-12">
+                          <label for="label">Default Value:</label>
+                          <input class="form-control" id="label" type="text">
+                      </div>
+                  </div>
               </div>
           </div>
       </div>
