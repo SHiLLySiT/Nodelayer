@@ -14,6 +14,11 @@ function init () {
         require(file);
     });
 
+    // session data
+    global.project = {
+        templates:{},
+    }
+
     // create windows
     global.window = {};
     createWindow(
@@ -69,15 +74,14 @@ function init () {
             parent: global.window.canvas,
             x: global.window.canvas.getPosition()[0] + 300,
             y: global.window.canvas.getPosition()[1] + 50,
-            minWidth: 300,
-            minHeight: 200,
             width: 300,
             height: 500,
+            resizable: false,
             minimizable: false,
             maximizable: false,
         },
         null,
-        false
+        true
     );
 }
 
@@ -93,7 +97,7 @@ function createWindow (id, pathStr, options, menu, showDevTools) {
     })
     window.setMenu(menu);
     if (showDevTools) {
-        window.openDevTools();
+        window.openDevTools({mode:'detach'});
     }
     global.window[id] = window;
 }

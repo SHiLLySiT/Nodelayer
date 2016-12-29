@@ -1,152 +1,181 @@
 <!DOCTYPE html>
 <html>
-  <head>
-      <meta charset="UTF-8">
-      <title>Template Editor</title>
-      <link href="../../css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
-      <link href="../../css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
-      <link href="../../css/main.css" rel="stylesheet" type="text/css"/>
-  </head>
-  <body>
-      <div class="container">
-          <!-- template list -->
-          <div id="template-list">
-              <div id="list">
-                  <div class="panel panel-default" style="margin:5px;">
-                      <div class="panel-heading">
-                          <div class="row center-vertical">
-                              <div class="col-xs-8">
-                                  <div>Example Template</div>
-                              </div>
-                              <div class="col-xs-4">
-                                  <button class="btn btn-default btn-sm btn-borderless" type="submit">
-                                      <i class="fa fa-pencil" aria-hidden="true"></i>
-                                  </button>
-                              </div>
-                          </div>
-                      </div>
-                  </div>
+<head>
+    <meta charset="UTF-8">
+    <title>Template Editor</title>
+    <link href="../../css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
+    <link href="../../css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+    <link href="../../css/main.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+    <div class="container">
+        <!-- template list -->
+        <div id="template-list">
+            <!-- holds list  -->
+            <div id="list">
+            </div>
 
-                  <div class="panel panel-default" style="margin:5px;">
-                      <div class="panel-heading">
-                          <div class="row center-vertical">
-                              <div class="col-xs-8">
-                                  <div>A Really Long Template</div>
-                              </div>
-                              <div class="col-xs-4">
-                                  <button class="btn btn-default btn-sm btn-borderless" type="submit">
-                                      <i class="fa fa-pencil" aria-hidden="true"></i>
-                                  </button>
-                              </div>
+            <!-- new template button -->
+            <div class="row">
+                <div class="text-center col-xs-12">
+                    <button type="button" id="new" class="btn btn-default">
+                        NEW TEMPLATE
+                    </button>
+                </div>
+            </div>
+
+            <!-- template -->
+            <div id="template" class="hide">
+                <div class="panel panel-default" style="margin:5px;">
+                    <div class="panel-heading">
+                        <div class="row center-vertical">
+                            <div class="col-xs-8">
+                                <div id="name">New Template</div>
+                            </div>
+                            <div class="col-xs-4">
+                                <button id="edit" class="btn btn-default btn-sm btn-borderless" type="submit">
+                                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                                </button>
+                            </div>
                         </div>
-                      </div>
-                  </div>
-              </div>
-              <hr>
-              <div class="row">
-                  <div class="text-center col-xs-12">
-                      <button type="button" id="newTemplate" class="btn btn-default">
-                          NEW TEMPLATE
-                      </button>
-                  </div>
-              </div>
-          </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-          <!-- template edit -->
-          <div id="template-edit" class="hide">
-              <div class="row">
-                  <div class="col-xs-2 center-vertical" style="height:30px;">
-                      <button class="btn btn-default btn-sm btn-borderless" type="submit">
-                          <i class="fa fa-arrow-left" aria-hidden="true"></i>
-                      </button>
-                  </div>
-                  <div class="col-xs-8 center-vertical" style="height:30px;">
-                      <div class="text-center" style="color:gray;">Edit Example Template</div>
-                  </div>
-                  <div class="col-xs-2 center-vertical" style="height:30px;">
-                      <!-- keeps text centered -->
-                  </div>
-              </div>
-              <hr style="margin:10px;">
-              <div id="list">
-                  <div class="panel panel-default" style="margin:5px;">
-                      <div class="panel-heading">
-                          <div class="row center-vertical">
-                              <div class="col-xs-8">
-                                  <div>Property1</div>
-                                  <div style="color:gray;">(string)</div>
-                              </div>
-                              <div class="col-xs-4">
-                                  <button class="btn btn-default btn-sm btn-borderless" type="submit">
-                                      <i class="fa fa-pencil" aria-hidden="true"></i>
-                                  </button>
-                              </div>
-                          </div>
-                      </div>
-                  </div>
-                  <div class="panel panel-default" style="margin:5px;">
-                      <div class="panel-heading">
-                          <div class="row center-vertical">
-                              <div class="col-xs-8">
-                                  <div>Property1</div>
-                                  <div style="color:gray;">(string)</div>
-                              </div>
-                              <div class="col-xs-4">
-                                  <button class="btn btn-default btn-sm btn-borderless" type="submit">
-                                      <i class="fa fa-pencil" aria-hidden="true"></i>
-                                  </button>
-                              </div>
-                          </div>
-                      </div>
-                  </div>
-              </div>
-          </div>
+        <!-- template edit -->
+        <div id="template-edit">
+            <!-- header -->
+            <div class="row">
+                <div class="col-xs-2 center-vertical" style="height:30px;">
+                    <!-- back button -->
+                    <button id="back" class="btn btn-default btn-sm btn-borderless" type="submit">
+                        <i class="fa fa-arrow-left" aria-hidden="true"></i>
+                    </button>
+                </div>
+                <div class="col-xs-8 center-vertical" style="height:30px;">
+                    <div class="text-center" style="color:gray;">Edit Template</div>
+                </div>
+                <div class="col-xs-2 center-vertical" style="height:30px;">
+                    <!-- delete button -->
+                    <button id="delete" class="btn btn-danger btn-sm btn-borderless" data-toggle="modal" data-target="#myModal" type="submit">
+                        <i class="fa fa-trash" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </div>
 
-          <!-- property edit -->
-          <div id="template-edit" class="hide">
-              <div class="row">
-                  <div class="col-xs-2 center-vertical" style="height:30px;">
-                      <button class="btn btn-default btn-sm btn-borderless" type="submit">
-                          <i class="fa fa-arrow-left" aria-hidden="true"></i>
-                      </button>
-                  </div>
-                  <div class="col-xs-8 center-vertical" style="height:30px;">
-                      <div class="text-center" style="color:gray;">Edit Example Property</div>
-                  </div>
-                  <div class="col-xs-2 center-vertical" style="height:30px;">
-                      <!-- keeps text centered -->
-                  </div>
-              </div>
-              <hr style="margin:10px;">
-              <div id="settings">
-                  <!-- Label -->
-                  <div class="row">
-                      <div class="col-xs-12">
-                          <label for="label">Label:</label>
-                          <input class="form-control" id="label" type="text">
-                      </div>
-                  </div>
-                  <!-- Type -->
-                  <div class="row">
-                      <div class="col-xs-12">
-                          <label for="type">Type:</label>
-                          <select class="form-control" id="type">
+            <hr style="margin:10px;">
+
+            <!-- name -->
+            <div class="row">
+                <div class="col-xs-12">
+                    <label for="name">Name:</label>
+                    <input class="form-control" id="name" type="text">
+                </div>
+            </div>
+
+            <hr style="margin:10px;">
+
+            <!-- property list -->
+            <div id="list">
+            </div>
+
+            <!-- new property button -->
+            <div class="row">
+                <div class="text-center col-xs-12">
+                    <button type="button" id="new" class="btn btn-default">
+                        NEW PROPERTY
+                    </button>
+                </div>
+            </div>
+
+            <!-- delete modal -->
+            <div id="deleteModal" class="modal fade" role="dialog">
+                <div class="modal-dialog">
+
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Delete Template?</h4>
+                        </div>
+                        <div class="modal-body">
+                            <p>Some text in the modal.</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+
+            <!-- template -->
+            <div id="template" class="hide">
+                <div class="panel panel-default" style="margin:5px;">
+                    <div class="panel-heading">
+                        <div class="row center-vertical">
+                            <div class="col-xs-8">
+                                <div id="name">New Property</div>
+                                <div id="type" style="color:gray;">string</div>
+                            </div>
+                            <div class="col-xs-4">
+                                <button id="edit" class="btn btn-default btn-sm btn-borderless" type="submit">
+                                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- property edit -->
+        <div id="property-edit">
+            <div class="row">
+                <div class="col-xs-2 center-vertical" style="height:30px;">
+                    <!-- back button -->
+                    <button id="back" class="btn btn-default btn-sm btn-borderless" type="submit">
+                        <i class="fa fa-arrow-left" aria-hidden="true"></i>
+                    </button>
+                </div>
+                <div class="col-xs-8 center-vertical" style="height:30px;">
+                    <div class="text-center" style="color:gray;">Edit Property</div>
+                </div>
+                <div class="col-xs-2 center-vertical" style="height:30px;">
+                    <!-- delete button -->
+                    <button id="delete" class="btn btn-danger btn-sm btn-borderless" type="submit">
+                        <i class="fa fa-trash" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </div>
+            <hr style="margin:10px;">
+            <div id="settings">
+                <!-- Label -->
+                <div class="row">
+                    <div class="col-xs-12">
+                        <label for="name">Label:</label>
+                        <input class="form-control" id="name" type="text">
+                    </div>
+                </div>
+                <!-- Type -->
+                <div class="row">
+                    <div class="col-xs-12">
+                        <label for="type">Type:</label>
+                        <select class="form-control" id="type">
                             <option>string</option>
                             <option>integer</option>
                             <option>boolean</option>
-                          </select>
-                      </div>
-                  </div>
-                  <!-- Default Value -->
-                  <div class="row">
-                      <div class="col-xs-12">
-                          <label for="label">Default Value:</label>
-                          <input class="form-control" id="label" type="text">
-                      </div>
-                  </div>
-              </div>
-          </div>
-      </div>
-  </body>
-  <script src="../../render-process/template-editor/template-editor.js"></script>
+                        </select>
+                    </div>
+                </div>
+                <!-- Default Value -->
+                <div class="row">
+                    <div class="col-xs-12">
+                        <label for="label">Default Value:</label>
+                        <input class="form-control" id="defaultValue" type="text">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="../../render-process/template-editor/template-editor.js"></script>
 </html>
