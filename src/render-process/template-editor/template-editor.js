@@ -10,14 +10,28 @@ templateList.find('#new').click(handleNewTemplateClick);
 
 let templateEdit = $('#template-edit');
 templateEdit.find('#back').click(handleTemplateBackClick);
-templateEdit.find('#delete').click(handleTemplateDeleteClick);
 templateEdit.find('#new').click(handleNewPropertyClick);
+templateEdit.find('#delete').click(handleTemplateDeleteClick);
+templateEdit.find('#delete').mouseleave(handleDeleteOut);
+templateEdit.find('#delete').find('#confirm').hide();
 templateEdit.find('#name').change(function(e) {
     ipc.send('update-template', currentTemplateUUID, { name:$(this).val() });
 });
 
 let propertyEdit = $('#property-edit');
+propertyEdit.find('#delete').click(handlePropertyDeleteClick);
+propertyEdit.find('#delete').mouseleave(handleDeleteOut);
+propertyEdit.find('#delete').find('#confirm').hide();
 propertyEdit.find('#back').click(handlePropertyBackClick);
+propertyEdit.find("#name").change(function(e) {
+    ipc.send('update-property', currentTemplateUUID, currentPropertyUUID, { name:$(this).val() });
+});
+propertyEdit.find("#type").change(function(e) {
+    ipc.send('update-property', currentTemplateUUID, currentPropertyUUID, { type:$(this).val() });
+});
+propertyEdit.find("#defaultValue").change(function(e) {
+    ipc.send('update-property', currentTemplateUUID, currentPropertyUUID, { defaultValue:$(this).val() });
+});
 
 let currentTemplateUUID = null;
 let currentPropertyUUID = null;
@@ -55,7 +69,7 @@ function handleEditTemplateClick(e) {
     templateEdit.find('#list').empty();
     for (let property in template.properties) {
         if (template.properties.hasOwnProperty(property)) {
-            addProperty(property);
+            addProperty(template.properties[property]);
         }
     }
 
@@ -65,15 +79,55 @@ function handleEditTemplateClick(e) {
 
 ipc.on('template-updated', function(event, template) {
     let panel = templateList.find('.panel[uuid="' + template.uuid + '"]');
-    let name = panel.find('#name');
-    name.text(template.name);
+    panel.find('#name').text(template.name);
 });
 
-function handleTemplateDeleteClick(e) {
-    $(this).closest('#deleteModal').show();
+function handleDeleteOut() {
+    $(this).find("#confirm").hide();
+    $(this).find("#normal").show();
 }
 
-function handleTemplateBackClick(e) {
+function handleTemplateDeleteClick() {
+    let confirmIcon = $(this).find("#confirm");
+    let normalIcon = $(this).find("#normal");
+    let firstClick = normalIcon.is(":visible");
+    if (firstClick) {
+        normalIcon.hide();
+        confirmIcon.show();
+    } else {
+        normalIcon.show();
+        confirmIcon.hide();
+        ipc.send('delete-template', currentTemplateUUID);
+        handleTemplateBackClick();
+    }
+}
+
+ipc.on('template-deleted', function(event, uuid) {
+    let panel = templateList.find('.panel[uuid="' + uuid + '"]');
+    panel.remove();
+});
+
+function handlePropertyDeleteClick() {
+    let confirmIcon = $(this).find("#confirm");
+    let normalIcon = $(this).find("#normal");
+    let firstClick = normalIcon.is(":visible");
+    if (firstClick) {
+        normalIcon.hide();
+        confirmIcon.show();
+    } else {
+        normalIcon.show();
+        confirmIcon.hide();
+        ipc.send('delete-property', currentTemplateUUID, currentPropertyUUID);
+        handlePropertyBackClick();
+    }
+}
+
+ipc.on('property-deleted', function(event, templateUUID, propertyUUID) {
+    let panel = templateEdit.find('.panel[uuid="' + propertyUUID + '"]');
+    panel.remove();
+});
+
+function handleTemplateBackClick() {
     state = 'list';
     currentTemplateUUID = null;
     templateList.show();
@@ -94,19 +148,17 @@ function addProperty(data) {
     let property = templateEdit.find('#template').find('div').first().clone();
     templateEdit.find('#list').append(property);
     property.attr('uuid', data.uuid);
-    property.find('#name').val(data.name);
-    property.find('#type').val(data.type);
+    property.find('#name').text(data.name);
+    property.find('#type').text(data.type);
     property.find('#edit').click(handleEditProperty);
 }
 
-function handlePropertyBackClick() {
+function handleEditProperty() {
     state = 'property';
     currentPropertyUUID = $(this).closest('.panel').attr('uuid');
     let template = ipc.sendSync('request-template', currentTemplateUUID)
     let property = template.properties[currentPropertyUUID];
-    console.log(currentPropertyUUID);
-    console.log(template);
-    console.log(property);
+
     propertyEdit.find("#name").val(property.name);
     propertyEdit.find("#type").val(property.type);
     propertyEdit.find("#defaultValue").val(property.defaultValue);
@@ -115,7 +167,15 @@ function handlePropertyBackClick() {
     propertyEdit.show();
 }
 
-function handlePropertyEditBack() {
+ipc.on('property-updated', function(event, template, property) {
+    if (state == 'property' && property.uuid == currentPropertyUUID) {
+        let panel = templateEdit.find('.panel[uuid="' + property.uuid + '"]');
+        panel.find('#name').text(property.name);
+        panel.find('#type').text(property.type);
+    }
+});
+
+function handlePropertyBackClick() {
     state = 'template';
     currentPropertyUUID = null;
     templateEdit.show();
