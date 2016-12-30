@@ -48,19 +48,9 @@ function onBooleanPropertyChanged(e) {
     ipc.send('property-changed', index, value);
 }
 
-function isInteger(str) {
-      return str.match(/[^$,.\d]/) == null;
-}
-
 function onIntegerPropertyChanged(e) {
     let index = $(this).attr('index');
     let value = $(this).val();
-
-    if (!isInteger(value)) {
-        $(e.currentTarget).val(0);
-        value = 0;
-    }
-
     ipc.send('property-changed', index, value);
 }
 
@@ -68,22 +58,18 @@ function onIntegerIncrease(e) {
     let input = $(this).closest('.row').find('input');
     let index = input.attr('index');
     let value = parseInt(input.val());
-    if (value < Number.MAX_SAFE_INTEGER) {
-        value++;
-        input.val(value);
-        ipc.send('property-changed', index, value);
-    }
+    value++;
+    input.val(value);
+    ipc.send('property-changed', index, value);
 }
 
 function onIntegerDecrease(e) {
     let input = $(this).closest('.row').find('input');
     let index = input.attr('index');
     let value = parseInt(input.val());
-    if (value > Number.MIN_SAFE_INTEGER) {
-        value--;
-        input.val(value);
-        ipc.send('property-changed', index, value);
-    }
+    value--;
+    input.val(value);
+    ipc.send('property-changed', index, value);
 }
 
 function onStringPropertyChanged(e) {
