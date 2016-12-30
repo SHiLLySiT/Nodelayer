@@ -13,14 +13,16 @@ ipc.on('create-template', function(event) {
         properties: {},
     }
     global.project.templates[template.uuid] = template;
-    event.sender.webContents.send('template-created', template);
+    global.window.template.webContents.send('template-created', template);
+    global.window.inspector.webContents.send('template-created', template);
 });
 
 ipc.on('delete-template', function(event, uuid) {
     if (global.project.templates.hasOwnProperty(uuid)) {
         delete global.project.templates[uuid];
     }
-    event.sender.webContents.send('template-deleted', uuid);
+    global.window.template.webContents.send('template-deleted', uuid);
+    global.window.inspector.webContents.send('template-deleted', uuid);
 });
 
 ipc.on('update-template', function(event, uuid, data) {
@@ -31,7 +33,8 @@ ipc.on('update-template', function(event, uuid, data) {
     if (data.hasOwnProperty('name')) {
         template.name = data.name;
     }
-    event.sender.webContents.send('template-updated', template);
+    global.window.template.webContents.send('template-updated', template);
+    global.window.inspector.webContents.send('template-updated', template);
 });
 
 ipc.on('create-property', function(event, templateUUID) {
@@ -46,7 +49,7 @@ ipc.on('create-property', function(event, templateUUID) {
         defaultValue: "",
     };
     template.properties[property.uuid] = property;
-    event.sender.webContents.send('property-created', template, property);
+    global.window.template.webContents.send('property-created', template, property);
 });
 
 ipc.on('delete-property', function(event, templateUUID, propertyUUID) {
@@ -56,7 +59,7 @@ ipc.on('delete-property', function(event, templateUUID, propertyUUID) {
             delete template.properties[propertyUUID];
         }
     }
-    event.sender.webContents.send('property-deleted', templateUUID, propertyUUID);
+    global.window.template.webContents.send('property-deleted', templateUUID, propertyUUID);
 });
 
 ipc.on('update-property', function(event, templateUUID, propertyUUID, data) {
@@ -90,5 +93,5 @@ ipc.on('update-property', function(event, templateUUID, propertyUUID, data) {
             property.defaultValue = "";
         }
     }
-    event.sender.webContents.send('property-updated', template, property);
+    global.window.template.webContents.send('property-updated', template, property);
 });

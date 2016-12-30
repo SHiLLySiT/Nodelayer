@@ -64,11 +64,11 @@ function init () {
             maximizable: false,
         },
         null,
-        false
+        true
     );
 
     createWindow(
-        'templateEditor',
+        'template',
         'src/windows/template-editor/template-editor.html',
         {
             parent: global.window.canvas,
@@ -81,7 +81,7 @@ function init () {
             maximizable: false,
         },
         null,
-        true
+        false
     );
 }
 
