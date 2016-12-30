@@ -156,22 +156,41 @@ function addProperty(data) {
 function handleEditProperty() {
     state = 'property';
     currentPropertyUUID = $(this).closest('.panel').attr('uuid');
-    let template = ipc.sendSync('request-template', currentTemplateUUID)
-    let property = template.properties[currentPropertyUUID];
 
-    propertyEdit.find("#name").val(property.name);
-    propertyEdit.find("#type").val(property.type);
-    propertyEdit.find("#defaultValue").val(property.defaultValue);
+    updateProperty();
 
     templateEdit.hide();
     propertyEdit.show();
 }
 
+function updateProperty() {
+    let text = propertyEdit.find("#text");
+    let checkbox = propertyEdit.find("#checkbox");
+    let template = ipc.sendSync('request-template', currentTemplateUUID);
+    let property = template.properties[currentPropertyUUID];
+
+    propertyEdit.find("#name").val(property.name);
+    propertyEdit.find("#type").val(property.type);
+
+    if (property.type == 'boolean') {
+        text.hide();
+        checkbox.show();
+        checkbox.find('#defaultValue').attr('checked', property.defaultValue);
+    } else {
+        text.show();
+        checkbox.hide();
+        text.find("#defaultValue").val(property.defaultValue);
+    }
+}
+
 ipc.on('property-updated', function(event, template, property) {
+    // update property in template edit
+    let panel = templateEdit.find('.panel[uuid="' + property.uuid + '"]');
+    panel.find('#name').text(property.name);
+    panel.find('#type').text(property.type);
+    // update property in property edit
     if (state == 'property' && property.uuid == currentPropertyUUID) {
-        let panel = templateEdit.find('.panel[uuid="' + property.uuid + '"]');
-        panel.find('#name').text(property.name);
-        panel.find('#type').text(property.type);
+        updateProperty();
     }
 });
 
