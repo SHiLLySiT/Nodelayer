@@ -71,11 +71,24 @@ ipc.on('update-property', function(event, templateUUID, propertyUUID, data) {
     if (data.hasOwnProperty('name')) {
         property.name = data.name;
     }
-    if (data.hasOwnProperty('type')) {
-        property.type = data.type;
-    }
     if (data.hasOwnProperty('defaultValue')) {
         property.defaultValue = data.defaultValue;
+        if (property.type == 'integer') {
+            if (!utils.isInteger(property.defaultValue)) {
+                property.defaultValue = 0;
+            }
+        }
+    }
+    if (data.hasOwnProperty('type')) {
+        property.type = data.type;
+        // update default value if type changes
+        if (property.type == 'boolean') {
+            property.defaultValue = false;
+        } else if (property.type == 'integer') {
+            property.defaultValue = 0;
+        } else if (property.type == 'string') {
+            property.defaultValue = "";
+        }
     }
     event.sender.webContents.send('property-updated', template, property);
 });
