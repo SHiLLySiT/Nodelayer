@@ -2,6 +2,8 @@ const ipc = require('electron').ipcMain;
 const remote = require('electron').remote
 const utils = require('../../utils');
 
+global.project.templates = {};
+
 ipc.on('request-template', function(event, uuid) {
     event.returnValue = global.project.templates[uuid];
 });

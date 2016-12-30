@@ -8,16 +8,14 @@ const glob = require('glob');
 const url = require('url');
 
 function init () {
+    // session data
+    global.project = {};
+
     // include all files in main-process dir
     var files = glob.sync(path.join(__dirname, 'src/main-process/**/*.js'));
     files.forEach(function (file) {
         require(file);
     });
-
-    // session data
-    global.project = {
-        templates:{},
-    }
 
     // create windows
     global.window = {};
@@ -29,7 +27,7 @@ function init () {
             height:600,
         },
         null,
-        false
+        true
     );
 
     createWindow(
@@ -64,7 +62,7 @@ function init () {
             maximizable: false,
         },
         null,
-        true
+        false
     );
 
     createWindow(
