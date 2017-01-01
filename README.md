@@ -1,19 +1,17 @@
 # Nodelayer
 > a data visualization tool
 
-The purpose of Nodelayer is to help people visualize connections between
-arbitrary data. Either it be conversation with branching dialog, defining
+![screenshot1](screenshots/screenshot1.png)
+
+Nodelayer is a desktop application built with native web technologies using [Electron](http://electron.atom.io/). Its purpose is to help people visualize connections between
+arbitrary data. Either it be a conversation with branching dialog, defining
 a path for NPCs in a game, or creating a family tree.
 
 ## Installing / Getting started
 
 TODO
 
-## Developing
-
-TODO
-
-### Building
+## Building a Standalone Executable
 
 Install [electron-packager](https://github.com/electron-userland/electron-packager) globally.
 
@@ -23,7 +21,7 @@ Run in the root directory:
 electron-packager . Nodelayer --platform=PLATFORM
 ```
 
-## Planned Features
+## Features
 
 * place and connect nodes
 * load/save node webs
