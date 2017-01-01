@@ -39,15 +39,18 @@ let currentPropertyUUID = null;
 // values: list, template, property
 let state = 'list';
 
-// init
 templateEdit.hide();
 propertyEdit.hide();
 
-let templates = ipc.sendSync('request-templates');
-for (let t in templates) {
-    if (templates.hasOwnProperty(t)) {
-        let template = templates[t];
-        addTemplate(template);
+init();
+
+function init() {
+    let templates = ipc.sendSync('request-templates');
+    for (let t in templates) {
+        if (templates.hasOwnProperty(t)) {
+            let template = templates[t];
+            addTemplate(template);
+        }
     }
 }
 
