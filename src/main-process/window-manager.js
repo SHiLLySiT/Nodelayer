@@ -17,7 +17,7 @@ showInspector();
 // -------------------------------------------------------------------- WINDOWS
 function showCanvas() {
     // window
-    var window = new BrowserWindow({
+    let window = new BrowserWindow({
         width:800,
         height:600,
     });
@@ -64,7 +64,7 @@ function showCanvas() {
 }
 
 function showToolbar() {
-    var window = new BrowserWindow({
+    let window = new BrowserWindow({
         parent: global.window.canvas,
         x: global.window.canvas.getPosition()[0],
         y: global.window.canvas.getPosition()[1] + 50,
@@ -88,7 +88,7 @@ function showToolbar() {
 }
 
 function showInspector() {
-    var window = new BrowserWindow({
+    let window = new BrowserWindow({
         parent: global.window.canvas,
         x: global.window.canvas.getPosition()[0],
         y: global.window.canvas.getPosition()[1] + 150,
@@ -113,7 +113,7 @@ function showInspector() {
 }
 
 function showTemplate() {
-    var window = new BrowserWindow({
+    let window = new BrowserWindow({
         parent: global.window.canvas,
         x: global.window.canvas.getPosition()[0] + 300,
         y: global.window.canvas.getPosition()[1] + 50,
