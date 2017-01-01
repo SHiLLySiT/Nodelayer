@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <meta charset="UTF-8">
+      <title>Inspector</title>
+      <link href="../../css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
+      <link href="../../css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+  </head>
+  <body>
+      <div class="container">
+          <div class="row">
+              <div class="col-xs-12">
+                  <div id="no-selection-msg" class="text-center">
+                      <div style="color:gray;"><i>Nothing is selected</i></div>
+                  </div>
+              </div>
+          </div>
+
+          <div id="selection-container">
+              <div id="template-selection" class="row">
+                  <div class="col-xs-12">
+                      <select class="form-control" id="value">
+                        <option></option>
+                      </select>
+                  </div>
+              </div>
+
+              <hr>
+
+              <div class="row">
+                  <div class="col-xs-12">
+                      <div id="no-template-msg" class="text-center">
+                          <div style="color:gray;"><i>No template selected</i></div>
+                      </div>
+                      <div id="no-properties-msg" class="text-center">
+                          <div style="color:gray;"><i>Template has no properties</i></div>
+                      </div>
+                  </div>
+              </div>
+
+              <div id="property-container">
+              </div>
+          </div>
+      </div>
+
+      <!-- property templates  -->
+      <div class="hidden">
+          <div id="template-string">
+              <div class="row">
+                  <div class="col-xs-12">
+                      <label id="label" for="value">String:</label>
+                      <input class="form-control" id="value" type="text">
+                  </div>
+              </div>
+          </div>
+
+          <div id="template-float">
+              <div class="row">
+                  <div class="col-xs-12">
+                      <label id="label" for="value">Float:</label>
+                      <input class="form-control" id="value" type="text">
+                  </div>
+              </div>
+          </div>
+
+          <div id="template-integer">
+              <div class="row">
+                  <div class="col-xs-12">
+                      <label id="label" for="value">Integer:</label>
+                      <div class="input-group">
+                          <input class="form-control" id="value" type="text" >
+                          <div class="input-group-btn">
+                              <button class="btn btn-default" id="increase" type="submit">
+                                  <i class="fa fa-caret-up" aria-hidden="true"></i>
+                              </button>
+                              <button class="btn btn-default" id="decrease" type="submit">
+                                  <i class="fa fa-caret-down" aria-hidden="true"></i>
+                              </button>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+
+          <div id="template-boolean">
+              <div class="row">
+                  <div class="col-xs-12">
+                      <label id="label" for="value">Boolean:</label><br>
+                      <input type="checkbox" id="value">
+                  </div>
+              </div>
+          </div>
+
+          <div id="template-enum">
+              <div class="row">
+                  <div class="col-xs-12">
+                      <label id="label" for="value">Enum:</label>
+                      <select class="form-control" id="value">
+                        <option>Cat</option>
+                        <option>Dog</option>
+                        <option>Bird</option>
+                      </select>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </body>
+  <script src="../../render-process/inspector/inspector.js"></script>
+</html>
