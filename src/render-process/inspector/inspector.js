@@ -15,11 +15,17 @@ let noPropertiesMsg = $('#no-properties-msg');
 let propContainer = $('#property-container');
 let nodeUUID = null;
 
-// init
-noSelectionMsg.show();
-noTemplateMsg.hide();
-noPropertiesMsg.hide();
-selectedContainer.hide();
+init();
+
+function init() {
+    noSelectionMsg.show();
+    noTemplateMsg.hide();
+    noPropertiesMsg.hide();
+    selectedContainer.hide();
+
+    let node = ipc.sendSync('request-selection');
+    changeSelection(node);
+}
 
 function load(node) {
     propContainer.empty();
@@ -155,16 +161,21 @@ ipc.on('property-updated', function(event, template, property) {
 });
 
 ipc.on('selection-changed', function(event, node) {
-    nodeUUID = node.uuid;
+    changeSelection(node);
+});
+
+function changeSelection(node) {
     if (node == null) {
+        nodeUUID = null;
         noSelectionMsg.show();
         selectedContainer.hide();
     } else {
+        nodeUUID = node.uuid;
         noSelectionMsg.hide();
         selectedContainer.show();
         load(node);
     }
-});
+}
 
 ipc.on('node-template-changed', function(event, node) {
     if (nodeUUID == node.uuid) {

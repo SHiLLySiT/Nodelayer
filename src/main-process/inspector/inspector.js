@@ -4,9 +4,17 @@ const electron = require('electron');
 const ipc = electron.ipcMain;
 const utils = require('../../utils');
 
+//------------------------------------------------------------------------ INIT
+global.selection = null;
+
 //---------------------------------------------------------------------- EVENTS
+ipc.on('request-selection', function(event) {
+    event.returnValue = global.selection;
+});
+
 ipc.on('selection-changed', function(event, uuid) {
     let node = global.project.nodes[uuid];
+    global.selection = node;
     if (global.window.inspector) {
         global.window.inspector.webContents.send('selection-changed', node);
     }
