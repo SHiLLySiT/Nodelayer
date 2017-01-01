@@ -1,11 +1,13 @@
 const ipc = require('electron').ipcMain;
 const utils = require('../../utils');
 
-ipc.on('selection-changed', function(event, properties) {
-    global.window.inspector.webContents.send('selection-changed', properties);
+ipc.on('selection-changed', function(event, uuid) {
+    let node = global.project.nodes[uuid];
+    global.window.inspector.webContents.send('selection-changed', node);
 });
 
-ipc.on('property-changed', function(event, index, value) {
+ipc.on('property-changed', function(event, uuid, data) {
+    let node = global.project.nodes[uuid];
     if (utils.isInteger(value)) {
         let int = parseInt(value);
         if (int > MAX_SAFE_INTEGER) {
@@ -17,6 +19,4 @@ ipc.on('property-changed', function(event, index, value) {
         $(e.currentTarget).val(0);
         value = 0;
     }
-
-    global.window.canvas.webContents.send('property-changed', index, value);
 });

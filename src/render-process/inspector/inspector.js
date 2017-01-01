@@ -11,40 +11,37 @@ selectedContainer.find('#template-selection').change(function(e) {
 
 let noSelectionContainer = $('#no-selection-container');
 let propContainer = $('#property-container');
-let loadedProperties = null;
+let nodeUUID = null;
 
 // init
 noSelectionContainer.show();
 selectedContainer.hide();
 
 function load(properties) {
-    loadedProperties = properties;
     propContainer.empty();
-    if (loadedProperties.length == 0) {
-        for (let i = 0; i < loadedProperties.length; i++) {
-            let prop = loadedProperties[i];
+    for (let i = 0; i < node.properties.length; i++) {
+        let prop = node.properties[i];
 
-            let template = $('#template-' + prop.type).clone();
-            template.show();
+        let template = $('#template-' + prop.type).clone();
+        template.show();
 
-            template.find('#label').text(prop.label + ':');
-            template.find('input').attr('index', i);
+        template.find('#label').text(prop.label + ':');
+        template.find('input').attr('index', i);
 
-            if (prop.type == 'string') {
-                template.find('#value').val(prop.value);
-                template.find('input').change(onStringPropertyChanged);
-            } else if (prop.type == 'integer') {
-                template.find('#value').val(prop.value);
-                template.find('input').change(onIntegerPropertyChanged);
-                template.find('#increase').click(onIntegerIncrease);
-                template.find('#decrease').click(onIntegerDecrease);
-            } else if (prop.type == 'boolean') {
-                template.find('#value').attr('checked', prop.value);
-                template.find('input').change(onBooleanPropertyChanged);
-            }
-
-            propContainer.append(template);
+        if (prop.type == 'string') {
+            template.find('#value').val(prop.value);
+            template.find('input').change(onStringPropertyChanged);
+        } else if (prop.type == 'integer') {
+            template.find('#value').val(prop.value);
+            template.find('input').change(onIntegerPropertyChanged);
+            template.find('#increase').click(onIntegerIncrease);
+            template.find('#decrease').click(onIntegerDecrease);
+        } else if (prop.type == 'boolean') {
+            template.find('#value').attr('checked', prop.value);
+            template.find('input').change(onBooleanPropertyChanged);
         }
+
+        propContainer.append(template);
     }
 }
 
@@ -99,16 +96,18 @@ ipc.on('template-updated', function(event, template) {
     let templateList = selectedContainer.find('#template-selection').find('#value');
     let option = templateList.find('option[uuid="' + template.uuid + '"]');
     option.text(template.name);
-    load(loadedProperties);
+    let node = ipc.sendSync('request-node', nodeUUID);
+    load(node);
 });
 
-ipc.on('selection-changed', function(event, properties) {
-    if (properties == null) {
+ipc.on('selection-changed', function(event, node) {
+    nodeUUID = node.uuid;
+    if (node == null) {
         noSelectionContainer.show();
         selectedContainer.hide();
     } else {
         noSelectionContainer.hide();
         selectedContainer.show();
-        load(properties);
+        load(node);
     }
 });

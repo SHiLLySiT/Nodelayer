@@ -270,7 +270,3 @@ ipc.on('tool-changed', function(event, tool) {
     tools.current = tools[tool];
     tools.current.activate();
 });
-
-ipc.on('property-changed', function(event, index, value) {
-    
-});
