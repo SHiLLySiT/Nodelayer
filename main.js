@@ -27,7 +27,7 @@ function init () {
             height:600,
         },
         null,
-        true
+        false
     );
 
     createWindow(

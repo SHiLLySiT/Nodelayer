@@ -8,8 +8,12 @@
   </head>
   <body>
       <div class="container">
-          <div id="no-selection-container" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);">
-              <div style="color:gray;"><i>Nothing is selected</i></div>
+          <div class="row">
+              <div class="col-xs-12">
+                  <div id="no-selection-msg" class="text-center">
+                      <div style="color:gray;"><i>Nothing is selected</i></div>
+                  </div>
+              </div>
           </div>
 
           <div id="selection-container">
@@ -22,6 +26,17 @@
               </div>
 
               <hr>
+
+              <div class="row">
+                  <div class="col-xs-12">
+                      <div id="no-template-msg" class="text-center">
+                          <div style="color:gray;"><i>No template selected</i></div>
+                      </div>
+                      <div id="no-properties-msg" class="text-center">
+                          <div style="color:gray;"><i>Template has no properties</i></div>
+                      </div>
+                  </div>
+              </div>
 
               <div id="property-container">
               </div>

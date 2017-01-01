@@ -1,3 +1,5 @@
+'use strict';
+
 const ipc = require('electron').ipcMain;
 const utils = require('../../utils');
 
@@ -6,17 +8,28 @@ ipc.on('selection-changed', function(event, uuid) {
     global.window.inspector.webContents.send('selection-changed', node);
 });
 
-ipc.on('property-changed', function(event, uuid, data) {
-    let node = global.project.nodes[uuid];
-    if (utils.isInteger(value)) {
-        let int = parseInt(value);
-        if (int > MAX_SAFE_INTEGER) {
-            value = MAX_SAFE_INTEGER;
-        } else if (int < MIN_SAFE_INTEGER) {
-            value = MIN_SAFE_INTEGER;
+ipc.on('change-node-template', function(event, nodeUUID, templateUUID) {
+    let node = global.project.nodes[nodeUUID];
+    node.template = templateUUID;
+    node.properties = {};
+
+    if (templateUUID != null) {
+        let template = global.project.templates[templateUUID];
+        for (let p in template.properties) {
+            if (template.properties.hasOwnProperty(p)) {
+                let property = template.properties[p];
+                node.properties[p] = {
+                    value: property.defaultValue,
+                }
+            }
         }
-    } else {
-        $(e.currentTarget).val(0);
-        value = 0;
     }
+    global.window.inspector.webContents.send('node-template-changed', node);
+});
+
+ipc.on('property-changed', function(event, nodeUUID, propertyUUID, value) {
+    let node = global.project.nodes[nodeUUID];
+    let property = node.properties[propertyUUID];
+    property.value = value;
+    // TODO: vailidate value
 });

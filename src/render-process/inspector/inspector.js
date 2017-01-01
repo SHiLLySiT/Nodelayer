@@ -5,80 +5,105 @@ const $ = require('jQuery');
 
 let selectedContainer = $('#selection-container');
 selectedContainer.find('#template-selection').change(function(e) {
-    let uuid = $(this).find("option:selected").attr('uuid');
-    // TODO: update properties on selected node
+    let templateUUID = $(this).find("option:selected").attr('uuid');
+    ipc.send('change-node-template', nodeUUID, templateUUID);
 })
 
-let noSelectionContainer = $('#no-selection-container');
+let noSelectionMsg = $('#no-selection-msg');
+let noTemplateMsg = $('#no-template-msg');
+let noPropertiesMsg = $('#no-properties-msg');
 let propContainer = $('#property-container');
 let nodeUUID = null;
 
 // init
-noSelectionContainer.show();
+noSelectionMsg.show();
+noTemplateMsg.hide();
+noPropertiesMsg.hide();
 selectedContainer.hide();
 
-function load(properties) {
+function load(node) {
     propContainer.empty();
-    for (let i = 0; i < node.properties.length; i++) {
-        let prop = node.properties[i];
+    if (node.template == null) {
+        selectedContainer.find('#template-selection').find("#value").val('');
+        noTemplateMsg.show();
+        noPropertiesMsg.hide();
+    } else {
+        let template = ipc.sendSync('request-template', node.template);
+        selectedContainer.find('#template-selection').find("#value").val(template.name);
+        noTemplateMsg.hide();
 
-        let template = $('#template-' + prop.type).clone();
-        template.show();
+        let hasProperties = false;
+        for (let p in template.properties) {
+            if (template.properties.hasOwnProperty(p)) {
+                hasProperties = true;
+                let nodeProp = node.properties[p];
+                let templateProp = template.properties[p];
 
-        template.find('#label').text(prop.label + ':');
-        template.find('input').attr('index', i);
+                let container = $('#template-' + templateProp.type).clone();
+                container.show();
 
-        if (prop.type == 'string') {
-            template.find('#value').val(prop.value);
-            template.find('input').change(onStringPropertyChanged);
-        } else if (prop.type == 'integer') {
-            template.find('#value').val(prop.value);
-            template.find('input').change(onIntegerPropertyChanged);
-            template.find('#increase').click(onIntegerIncrease);
-            template.find('#decrease').click(onIntegerDecrease);
-        } else if (prop.type == 'boolean') {
-            template.find('#value').attr('checked', prop.value);
-            template.find('input').change(onBooleanPropertyChanged);
+                container.find('#label').text(templateProp.name + ':');
+                container.find('input').attr('uuid', templateProp.uuid);
+
+                if (templateProp.type == 'string') {
+                    container.find('#value').val(nodeProp.value);
+                    container.find('input').change(onStringPropertyChanged);
+                } else if (templateProp.type == 'integer') {
+                    container.find('#value').val(nodeProp.value);
+                    container.find('input').change(onIntegerPropertyChanged);
+                    container.find('#increase').click(onIntegerIncrease);
+                    container.find('#decrease').click(onIntegerDecrease);
+                } else if (templateProp.type == 'boolean') {
+                    container.find('#value').attr('checked', nodeProp.value);
+                    container.find('input').change(onBooleanPropertyChanged);
+                }
+
+                propContainer.append(container);
+            }
         }
 
-        propContainer.append(template);
+        if (hasProperties) {
+            noPropertiesMsg.hide();
+        } else {
+            noPropertiesMsg.show();
+        }
     }
 }
 
 function onBooleanPropertyChanged(e) {
-    let index = $(this).attr('index');
+    let propUUID = $(this).attr('uuid');
     let value = $(this).is(":checked");
-    ipc.send('property-changed', index, value);
+    ipc.send('property-changed', nodeUUID, propUUID, value);
 }
 
 function onIntegerPropertyChanged(e) {
-    let index = $(this).attr('index');
+    let propUUID = $(this).attr('uuid');
     let value = $(this).val();
-    ipc.send('property-changed', index, value);
+    ipc.send('property-changed', nodeUUID, propUUID, value);
 }
 
 function onIntegerIncrease(e) {
     let input = $(this).closest('.row').find('input');
-    let index = input.attr('index');
+    let propUUID = input.attr('uuid');
     let value = parseInt(input.val());
     value++;
     input.val(value);
-    ipc.send('property-changed', index, value);
+    ipc.send('property-changed', nodeUUID, propUUID, value);
 }
 
 function onIntegerDecrease(e) {
     let input = $(this).closest('.row').find('input');
-    let index = input.attr('index');
+    let propUUID = input.attr('uuid');
     let value = parseInt(input.val());
     value--;
     input.val(value);
-    ipc.send('property-changed', index, value);
+    ipc.send('property-changed', nodeUUID, propUUID, value);
 }
 
 function onStringPropertyChanged(e) {
-    let index = $(this).attr('index');
+    let propUUID = $(this).attr('uuid');
     let value = $(this).val();
-    ipc.send('property-changed', index, value);
+    ipc.send('property-changed', nodeUUID, propUUID, value);
 }
 
 ipc.on('template-created', function(event, template) {
@@ -96,18 +121,53 @@ ipc.on('template-updated', function(event, template) {
     let templateList = selectedContainer.find('#template-selection').find('#value');
     let option = templateList.find('option[uuid="' + template.uuid + '"]');
     option.text(template.name);
-    let node = ipc.sendSync('request-node', nodeUUID);
-    load(node);
+    if (nodeUUID != null) {
+        let node = ipc.sendSync('request-node', nodeUUID);
+        load(node);
+    }
+});
+
+ipc.on('property-created', function(event, template, property) {
+    if (nodeUUID != null) {
+        let node = ipc.sendSync('request-node', nodeUUID);
+        if (node.template == template.uuid) {
+             load(node);
+        }
+    }
+});
+
+ipc.on('property-deleted', function(event, templateUUID, propertyUUID) {
+    if (nodeUUID != null) {
+        let node = ipc.sendSync('request-node', nodeUUID);
+        if (node.template == templateUUID) {
+            load(node);
+        }
+    }
+});
+
+ipc.on('property-updated', function(event, template, property) {
+    if (nodeUUID != null) {
+        let node = ipc.sendSync('request-node', nodeUUID);
+        if (node.template == template.uuid) {
+            load(node);
+        }
+    }
 });
 
 ipc.on('selection-changed', function(event, node) {
     nodeUUID = node.uuid;
     if (node == null) {
-        noSelectionContainer.show();
+        noSelectionMsg.show();
         selectedContainer.hide();
     } else {
-        noSelectionContainer.hide();
+        noSelectionMsg.hide();
         selectedContainer.show();
+        load(node);
+    }
+});
+
+ipc.on('node-template-changed', function(event, node) {
+    if (nodeUUID == node.uuid) {
         load(node);
     }
 });

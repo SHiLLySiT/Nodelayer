@@ -35,6 +35,7 @@ ipc.on('request-node', function(event, uuid) {
 ipc.on('create-node', function(event, x, y) {
     let node = {
         uuid: utils.generateUUID(),
+        template: null,
         x:x,
         y:y,
         properties: {},

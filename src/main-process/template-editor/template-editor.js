@@ -1,5 +1,6 @@
+'use strict';
+
 const ipc = require('electron').ipcMain;
-const remote = require('electron').remote
 const utils = require('../../utils');
 
 global.project.templates = {};
@@ -51,7 +52,19 @@ ipc.on('create-property', function(event, templateUUID) {
         defaultValue: "",
     };
     template.properties[property.uuid] = property;
+    // add property to nodes
+    for (let n in global.project.nodes) {
+        let node = global.project.nodes[n];
+        if (node.template == templateUUID) {
+            if (!node.properties.hasOwnProperty(property.uuid)) {
+                node.properties[property.uuid] = {
+                    value: property.defaultValue,
+                }
+            }
+        }
+    }
     global.window.template.webContents.send('property-created', template, property);
+    global.window.inspector.webContents.send('property-created', template, property);
 });
 
 ipc.on('delete-property', function(event, templateUUID, propertyUUID) {
@@ -61,7 +74,17 @@ ipc.on('delete-property', function(event, templateUUID, propertyUUID) {
             delete template.properties[propertyUUID];
         }
     }
+    // remove property from nodes
+    for (let n in global.project.nodes) {
+        let node = global.project.nodes[n];
+        if (node.template == templateUUID) {
+            if (node.properties.hasOwnProperty(propertyUUID)) {
+                delete node.properties[propertyUUID];
+            }
+        }
+    }
     global.window.template.webContents.send('property-deleted', templateUUID, propertyUUID);
+    global.window.inspector.webContents.send('property-deleted', templateUUID, propertyUUID);
 });
 
 ipc.on('update-property', function(event, templateUUID, propertyUUID, data) {
@@ -96,4 +119,5 @@ ipc.on('update-property', function(event, templateUUID, propertyUUID, data) {
         }
     }
     global.window.template.webContents.send('property-updated', template, property);
+    global.window.inspector.webContents.send('property-updated', template, property);
 });
