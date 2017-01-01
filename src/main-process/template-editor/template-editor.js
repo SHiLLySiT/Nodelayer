@@ -1,10 +1,36 @@
 'use strict';
 
-const ipc = require('electron').ipcMain;
+const electron = require('electron');
+const ipc = electron.ipcMain;
+const BrowserWindow = electron.BrowserWindow;
+const path = require('path');
+const url = require('url');
 const utils = require('../../utils');
 
+//------------------------------------------------------------------------ INIT
 global.project.templates = {};
 
+//---------------------------------------------------------------------- WINDOW
+var window = new BrowserWindow({
+    parent: global.window.canvas,
+    x: global.window.canvas.getPosition()[0] + 300,
+    y: global.window.canvas.getPosition()[1] + 50,
+    width: 300,
+    height: 500,
+    resizable: false,
+    minimizable: false,
+    maximizable: false,
+});
+window.loadURL(url.format({
+  pathname: path.join(__dirname, '../../windows/template-editor/template-editor.html'),
+  protocol: 'file:',
+  slashes: true
+}))
+window.setMenu(null);
+//window.openDevTools({mode:'detach'});
+global.window.template = window;
+
+//---------------------------------------------------------------------- EVENTS
 ipc.on('request-template', function(event, uuid) {
     event.returnValue = global.project.templates[uuid];
 });

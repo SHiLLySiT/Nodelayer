@@ -1,8 +1,34 @@
 'use strict';
 
-const ipc = require('electron').ipcMain;
+const electron = require('electron');
+const ipc = electron.ipcMain;
+const BrowserWindow = electron.BrowserWindow;
+const path = require('path');
+const url = require('url');
 const utils = require('../../utils');
 
+//---------------------------------------------------------------------- WINDOW
+var window = new BrowserWindow({
+    parent: global.window.canvas,
+    x: global.window.canvas.getPosition()[0],
+    y: global.window.canvas.getPosition()[1] + 150,
+    minWidth: 300,
+    minHeight: 200,
+    width: 300,
+    height: 500,
+    minimizable: false,
+    maximizable: false,
+});
+window.loadURL(url.format({
+  pathname: path.join(__dirname, '../../windows/inspector/inspector.html'),
+  protocol: 'file:',
+  slashes: true
+}))
+window.setMenu(null);
+//window.openDevTools({mode:'detach'});
+global.window.inspector = window;
+
+//---------------------------------------------------------------------- EVENTS
 ipc.on('selection-changed', function(event, uuid) {
     let node = global.project.nodes[uuid];
     global.window.inspector.webContents.send('selection-changed', node);
