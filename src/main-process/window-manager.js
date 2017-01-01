@@ -46,15 +46,27 @@ function showCanvas() {
             submenu: [
                 {
                     label: 'Show Toolbar',
-                    click () { showToolbar(); },
+                    click () {
+                        if (!global.window.toolbar) {
+                            showToolbar();
+                        }
+                    },
                 },
                 {
                     label: 'Show Inspector',
-                    click () { showInspector(); },
+                    click () {
+                        if (!global.window.inspector) {
+                            showInspector();
+                        }
+                    },
                 },
                 {
                     label: 'Show Template Editor',
-                    click () { showTemplate(); },
+                    click () {
+                        if (!global.window.template) {
+                            showTemplate();
+                        }
+                    },
                 },
             ],
         }
