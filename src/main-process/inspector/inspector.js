@@ -7,7 +7,9 @@ const utils = require('../../utils');
 //---------------------------------------------------------------------- EVENTS
 ipc.on('selection-changed', function(event, uuid) {
     let node = global.project.nodes[uuid];
-    global.window.inspector.webContents.send('selection-changed', node);
+    if (global.window.inspector) {
+        global.window.inspector.webContents.send('selection-changed', node);
+    }
 });
 
 ipc.on('change-node-template', function(event, nodeUUID, templateUUID) {
@@ -26,7 +28,9 @@ ipc.on('change-node-template', function(event, nodeUUID, templateUUID) {
             }
         }
     }
-    global.window.inspector.webContents.send('node-template-changed', node);
+    if (global.window.inspector) {
+        global.window.inspector.webContents.send('node-template-changed', node);
+    }
 });
 
 ipc.on('property-changed', function(event, nodeUUID, propertyUUID, value) {

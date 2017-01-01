@@ -74,11 +74,14 @@ function showToolbar() {
         minimizable: false,
         maximizable: false,
     });
+    window.on('closed', function () {
+      global.window.toolbar = null;
+    });
     window.loadURL(url.format({
       pathname: path.join(__dirname, '../windows/toolbar/toolbar.html'),
       protocol: 'file:',
       slashes: true
-    }))
+    }));
     window.setMenu(null);
     //window.openDevTools({mode:'detach'});
     global.window.toolbar = window;
@@ -96,11 +99,14 @@ function showInspector() {
         minimizable: false,
         maximizable: false,
     });
+    window.on('closed', function () {
+      global.window.inspector = null;
+    });
     window.loadURL(url.format({
       pathname: path.join(__dirname, '../windows/inspector/inspector.html'),
       protocol: 'file:',
       slashes: true
-    }))
+    }));
     window.setMenu(null);
     //window.openDevTools({mode:'detach'});
     global.window.inspector = window;
@@ -117,11 +123,14 @@ function showTemplate() {
         minimizable: false,
         maximizable: false,
     });
+    window.on('closed', function () {
+      global.window.template = null;
+    });
     window.loadURL(url.format({
       pathname: path.join(__dirname, '../windows/template-editor/template-editor.html'),
       protocol: 'file:',
       slashes: true
-    }))
+    }));
     window.setMenu(null);
     //window.openDevTools({mode:'detach'});
     global.window.template = window;
