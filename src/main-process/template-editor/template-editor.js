@@ -8,6 +8,10 @@ const utils = require('../../utils');
 global.project.templates = {};
 
 //---------------------------------------------------------------------- EVENTS
+ipc.on('request-templates', function(event) {
+    event.returnValue = global.project.templates;
+});
+
 ipc.on('request-template', function(event, uuid) {
     event.returnValue = global.project.templates[uuid];
 });

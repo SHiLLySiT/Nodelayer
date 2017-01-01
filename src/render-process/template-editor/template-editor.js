@@ -43,6 +43,14 @@ let state = 'list';
 templateEdit.hide();
 propertyEdit.hide();
 
+let templates = ipc.sendSync('request-templates');
+for (let t in templates) {
+    if (templates.hasOwnProperty(t)) {
+        let template = templates[t];
+        addTemplate(template);
+    }
+}
+
 function handleNewTemplateClick() {
     ipc.send('create-template');
 }
