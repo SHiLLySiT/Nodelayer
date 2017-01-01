@@ -27,6 +27,8 @@ let layers = {
 
 resizeCanvas();
 
+let selectedNode = null;
+
 // ---------------------------------------------------------------------- UTILS
 function getNode(uuid) {
     for (let i = 0; i < layers.node.children.length; i++) {
@@ -65,7 +67,12 @@ tools.create = {
 
     onNodeClick: function (e) {
         e.stopPropagation();
-        let uuid = e.currentTarget.data.uuid;
+        if (selectedNode) {
+            selectedNode.fillColor = 'black';
+        }
+        selectedNode = e.currentTarget;
+        selectedNode.fillColor = 'red';
+        let uuid = selectedNode.data.uuid;
         if (e.event.button == 0) {
             ipc.send('selection-changed', uuid);
         } else if (e.event.button == 2) {
@@ -253,7 +260,7 @@ ipc.on('node-created', function(event, node) {
     paperNode.onMouseDown = onNodeDown;
     paperNode.onMouseUp = onNodeUp;
     paperNode.onMouseDrag = onNodeDrag;
-    paperNode.fillColor = 'red';
+    paperNode.fillColor = 'black';
     paperNode.data = {
         uuid: node.uuid,
     }
