@@ -1,43 +1,12 @@
 'use strict';
 
 const electron = require('electron');
-const Menu = electron.Menu
 const ipc = electron.ipcMain;
-const BrowserWindow = electron.BrowserWindow;
-const path = require('path');
-const url = require('url');
 const utils = require('../../utils');
 
 //---------------------------------------------------------------------- INIT
 global.project.nodes = {};
 global.project.connections = {};
-
-//---------------------------------------------------------------------- WINDOW
-var window = new BrowserWindow({
-    width:800,
-    height:600,
-});
-window.loadURL(url.format({
-  pathname: path.join(__dirname, '../../windows/canvas/canvas.html'),
-  protocol: 'file:',
-  slashes: true
-}))
-window.on('closed', function () {
-  global.window.canvas = null;
-})
-window.setMenu(null);
-//window.openDevTools({mode:'detach'});
-global.window.canvas = window;
-
-//----------------------------------------------------------------------- MENU
-let template = [{
-    label: 'Window',
-    submenu: [{
-        label: 'Show Toolbar',
-    }],
-}];
-let menu = Menu.buildFromTemplate(template);
-window.setMenu(menu);
 
 //----------------------------------------------------------------------- UTILS
 function areNodesConnected(a, b) {
