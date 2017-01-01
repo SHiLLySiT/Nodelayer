@@ -3,18 +3,27 @@
 const ipc = require('electron').ipcRenderer;
 const $ = require('jQuery');
 
-$('#createBtn').click(function () {
-    $('button').each(function() {
-        $(this).removeClass('active');
-    });
-    $('#createBtn').addClass('active');
+$('#create').click(function () {
+    deactivateAll();
+    $(this).addClass('active');
     ipc.send('tool-changed', 'create');
-})
+});
 
-$('#connectBtn').click(function () {
+$('#connect').click(function () {
+    deactivateAll();
+    $(this).addClass('active');
+    ipc.send('tool-changed', 'connect');
+});
+
+init();
+
+function init() {
+    let tool = ipc.sendSync('request-tool');
+    $('#' + tool).addClass('active');
+}
+
+function deactivateAll() {
     $('button').each(function() {
         $(this).removeClass('active');
     });
-    $('#connectBtn').addClass('active');
-    ipc.send('tool-changed', 'connect');
-})
+}

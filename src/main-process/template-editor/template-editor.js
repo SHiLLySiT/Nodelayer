@@ -1,9 +1,16 @@
 'use strict';
 
-const ipc = require('electron').ipcMain;
+const electron = require('electron');
+const ipc = electron.ipcMain;
 const utils = require('../../utils');
 
+//------------------------------------------------------------------------ INIT
 global.project.templates = {};
+
+//---------------------------------------------------------------------- EVENTS
+ipc.on('request-templates', function(event) {
+    event.returnValue = global.project.templates;
+});
 
 ipc.on('request-template', function(event, uuid) {
     event.returnValue = global.project.templates[uuid];
@@ -16,16 +23,24 @@ ipc.on('create-template', function(event) {
         properties: {},
     }
     global.project.templates[template.uuid] = template;
-    global.window.template.webContents.send('template-created', template);
-    global.window.inspector.webContents.send('template-created', template);
+    if (global.window.template) {
+        global.window.template.webContents.send('template-created', template);
+    }
+    if (global.window.inspector) {
+        global.window.inspector.webContents.send('template-created', template);
+    }
 });
 
 ipc.on('delete-template', function(event, uuid) {
     if (global.project.templates.hasOwnProperty(uuid)) {
         delete global.project.templates[uuid];
     }
-    global.window.template.webContents.send('template-deleted', uuid);
-    global.window.inspector.webContents.send('template-deleted', uuid);
+    if (global.window.template) {
+        global.window.template.webContents.send('template-deleted', uuid);
+    }
+    if (global.window.inspector) {
+        global.window.inspector.webContents.send('template-deleted', uuid);
+    }
 });
 
 ipc.on('update-template', function(event, uuid, data) {
@@ -36,8 +51,12 @@ ipc.on('update-template', function(event, uuid, data) {
     if (data.hasOwnProperty('name')) {
         template.name = data.name;
     }
-    global.window.template.webContents.send('template-updated', template);
-    global.window.inspector.webContents.send('template-updated', template);
+    if (global.window.template) {
+        global.window.template.webContents.send('template-updated', template);
+    }
+    if (global.window.inspector) {
+        global.window.inspector.webContents.send('template-updated', template);
+    }
 });
 
 ipc.on('create-property', function(event, templateUUID) {
@@ -63,8 +82,12 @@ ipc.on('create-property', function(event, templateUUID) {
             }
         }
     }
-    global.window.template.webContents.send('property-created', template, property);
-    global.window.inspector.webContents.send('property-created', template, property);
+    if (global.window.template) {
+        global.window.template.webContents.send('property-created', template, property);
+    }
+    if (global.window.inspector) {
+        global.window.inspector.webContents.send('property-created', template, property);
+    }
 });
 
 ipc.on('delete-property', function(event, templateUUID, propertyUUID) {
@@ -83,8 +106,12 @@ ipc.on('delete-property', function(event, templateUUID, propertyUUID) {
             }
         }
     }
-    global.window.template.webContents.send('property-deleted', templateUUID, propertyUUID);
-    global.window.inspector.webContents.send('property-deleted', templateUUID, propertyUUID);
+    if (global.window.template) {
+        global.window.template.webContents.send('property-deleted', templateUUID, propertyUUID);
+    }
+    if (global.window.inspector) {
+        global.window.inspector.webContents.send('property-deleted', templateUUID, propertyUUID);
+    }
 });
 
 ipc.on('update-property', function(event, templateUUID, propertyUUID, data) {
@@ -118,6 +145,10 @@ ipc.on('update-property', function(event, templateUUID, propertyUUID, data) {
             property.defaultValue = "";
         }
     }
-    global.window.template.webContents.send('property-updated', template, property);
-    global.window.inspector.webContents.send('property-updated', template, property);
+    if (global.window.template) {
+        global.window.template.webContents.send('property-updated', template, property);
+    }
+    if (global.window.inspector) {
+        global.window.inspector.webContents.send('property-updated', template, property);
+    }
 });

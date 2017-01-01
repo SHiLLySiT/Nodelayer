@@ -1,11 +1,14 @@
-const ipc = require('electron').ipcMain;
+'use strict';
+
+const electron = require('electron');
+const ipc = electron.ipcMain;
 const utils = require('../../utils');
 
-// init
+//---------------------------------------------------------------------- INIT
 global.project.nodes = {};
 global.project.connections = {};
 
-//------------------------------------------------------------------------ UTILS
+//----------------------------------------------------------------------- UTILS
 function areNodesConnected(a, b) {
     if (a.connections.length == 0 || b.connections.length == 0) {
         return false;
