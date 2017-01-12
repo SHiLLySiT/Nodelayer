@@ -6,6 +6,8 @@ const BrowserWindow = electron.BrowserWindow;
 const Menu = electron.Menu;
 const path = require('path');
 const url = require('url');
+const dialog = electron.dialog;
+const fs = require('fs');
 
 // ----------------------------------------------------------------------- INIT
 global.window = {};
@@ -36,10 +38,50 @@ function showCanvas() {
     let template = [
         {
             label: 'File',
-            submenu: [{
-                label: 'Quit',
-                click () { console.log("Quit"); },
-            }],
+            submenu: [
+                {
+                    label: 'Open Project',
+                    click () {
+
+                    },
+                },
+                {
+                    label: 'Save Project',
+                    click () {
+
+                    },
+                },
+                {
+                    label: 'Open Web',
+                    click () {
+
+                    },
+                },
+                {
+                    label: 'Save Web',
+                    click () {
+                        dialog.showSaveDialog(function (fileName) {
+                               if (fileName === undefined) {
+                                    return;
+                               }
+                               let data = global.project.saveWeb();
+                               let string = JSON.stringify(data);
+                               fs.writeFile(fileName, string, function (err) {
+                                   if (err) {
+                                       console.log("An error ocurred creating the file "+ err.message)
+                                   }
+                               });
+                        });
+                    },
+                },
+                {
+                    label: 'Quit',
+                    click () {
+                        // TODO: save confirmation?
+                        electron.app.quit();
+                    },
+                }
+            ],
         },
         {
             label: 'Window',

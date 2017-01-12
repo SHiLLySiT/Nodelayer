@@ -208,19 +208,23 @@ class Project {
     }
 
     // ------------------------------------------------------------ SAVE/LOAD
-    saveProject(path) {
+    saveProject(data) {
+        return null;
+    }
+
+    loadProject() {
 
     }
 
-    loadProject(path) {
-
+    saveWeb() {
+        let data = {
+            nodes: this._nodes,
+            connections: this._connections,
+        }
+        return data;
     }
 
-    saveWeb(path) {
-
-    }
-
-    loadWeb(path) {
+    loadWeb(data) {
 
     }
 
