@@ -6,10 +6,11 @@ const BrowserWindow = electron.BrowserWindow;
 const path = require('path');
 const glob = require('glob');
 const url = require('url');
+const Project = require('./src/project');
 
 function init () {
     // session data
-    global.project = {};
+    global.project = new Project();
     global.window = {};
 
     // include all files in main-process dir
