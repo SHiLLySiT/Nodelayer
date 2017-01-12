@@ -42,7 +42,7 @@ ipc.on('change-node-template', function(event, nodeUUID, templateUUID) {
 });
 
 ipc.on('property-changed', function(event, nodeUUID, propertyUUID, value) {
-    let node = global.project.getNode(uuid);
+    let node = global.project.getNode(nodeUUID);
     let property = node.properties[propertyUUID];
     property.value = value;
     // TODO: vailidate value
