@@ -1,5 +1,7 @@
 'use strict';
 
+const utils = require('./utils');
+
 class Project {
     constructor() {
         this._nodes = {};
